@@ -1,0 +1,59 @@
+package testing;
+
+public class math {
+
+    public static void main(String[] args) {
+    int a = 10; int b = 5;
+    System.out.println("Min: " + min(a, b));
+    System.out.println("Max: " + max(a, b));
+    }
+    
+    public math() { }
+    
+    /// separator ///
+    
+    public static int min(int a, int b) { if (a < b) { return a; } else { return b; } }
+    
+    public static int max(int a, int b) { if (a > b) { return a; } else { return b; } }
+    //tahmid: min and max functionality
+    
+    /// separator ///
+    
+    /// separator ///
+    
+        //name : function
+    
+    /// separator ///
+    
+    /// separator ///
+    
+        //name : function
+    
+    /// separator ///
+    
+    /// separator ///
+    
+        //name : function
+    
+    /// separator ///
+    
+    /// separator ///
+    
+        //name : function
+    
+    /// separator ///
+    
+    /// separator ///
+    
+        //name : function
+    
+    /// separator ///
+    
+    /// separator ///
+    
+        //name : function
+    
+    /// separator ///
+    
+    }
+
