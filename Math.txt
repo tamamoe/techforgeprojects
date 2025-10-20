@@ -22,6 +22,19 @@ public class math {
     /// separator ///
     
         //name : function
+        /********************************
+         * Developer: Rehan Mahmood
+         * University ID: 240057479
+         * Function: This takes 2 integers, and divides the first one by the second.
+         ********************************/
+        public static int Divide(int x, int y) {
+            // Checking if a user divides by 0 (as its impossible and will throw an error)
+            if (y == 0) {
+                System.out.println("You cannot divide by 0");
+                return 0;
+            }
+            return x / y;
+        }
     
     /// separator ///
     
