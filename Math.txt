@@ -56,7 +56,12 @@ public class math {
     /// separator ///
     
         //mohammed hussain : subtract
-           
+           /********************************
+         * Developer: Mohammed hussain
+         * University ID: 240190916
+         * Function: This takes 2 integers and subtract them.
+         ********************************/ 
+
           public static int subtract(int a, int b) {
              return a-b;
           }
