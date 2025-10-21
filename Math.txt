@@ -55,7 +55,11 @@ public class math {
     
     /// separator ///
     
-        //name : function
+        //mohammed hussain : subtract
+           
+          public static int subtract(int a, int b) {
+             return a-b;
+          }
     
     /// separator ///
     
