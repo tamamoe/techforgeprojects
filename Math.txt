@@ -6,6 +6,8 @@ public class math {
     int a = 10; int b = 5;
     System.out.println("Min: " + min(a, b));
     System.out.println("Max: " + max(a, b));
+    System.out.println("Divide: " + Divide(a, b));
+    System.out.println("Multiply: " + multiply(a, b));
     }
     
     public math() { }
@@ -21,7 +23,7 @@ public class math {
     
     /// separator ///
     
-        //name : function
+        //Rehan : Divide
         /********************************
          * Developer: Rehan Mahmood
          * University ID: 240057479
@@ -39,9 +41,16 @@ public class math {
     /// separator ///
     
     /// separator ///
-    
-        //name : function
-    
+
+        //Daniela : Multiply
+        /********************************
+         * Developer: Daniela Stefan-Cucu
+         * University ID: 230090284
+         * Function: This takes 2 integers, and multiplies them.
+         ********************************/ 
+        public static int multiply(int a, int b) {
+            return a*b;
+        }
     /// separator ///
     
     /// separator ///
