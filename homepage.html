@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechForge - Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel = "Stylesheet"  href="Stylesheet.css" />
+    
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Tech<span>Forge</span></h2>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+                <li><a href="#"><i class="fas fa-box"></i> <span>Products</span></a></li>
+                <li><a href="#"><i class="fas fa-shopping-cart"></i> <span>Orders</span></a></li>
+                <li><a href="#"><i class="fas fa-users"></i> <span>About Us</span></a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> <span>Help & Support</span></a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <p>&copy; 2025 TechForge. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <div class="nav-left">
+                <button class="nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search products...">
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="nav-icons">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">O</div>
+                    <span>Profile</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tagline Section -->
+        <section class="tagline">
+            <h1>Innovate. Create. Transform.</h1>
+            <p>Discover cutting-edge technology solutions that empower your business to reach new heights of success.</p>
+        </section>
+
+        
+                  
+        </section>
+    </div>
+
+    <script>
+        
+        document.querySelector('.nav-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+
+       
+    </script>
+</body>
+</html>
