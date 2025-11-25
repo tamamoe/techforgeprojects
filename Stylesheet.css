@@ -1,5 +1,5 @@
 
-        * {
+       * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -116,8 +116,78 @@
             padding: 20px;
             transition: var(--transition);
         }
-        
 
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 30px;
+            padding: 8px 15px;
+            box-shadow: var(--shadow);
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            padding: 5px;
+            width: 100%;
+            background: transparent;
+        }
+
+        .search-bar i {
+            color: var(--text-light);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            margin-right: 20px;
+        }
+
+        .nav-icons i {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-icons i:hover {
+            color: var(--secondary);
+        }
+
+        
+        
        
 
         /* Responsive Styles */
@@ -157,14 +227,104 @@
                 transform: translateX(0);
             }
 
-           
+            .nav-toggle {
+                display: block;
+            }
 
             .main-content {
                 margin-left: 0;
             }
 
-            
+            .search-bar {
+                width: 200px;
+            }
+
+            .nav-icons {
+                display: none;
+            }
         }
 
+        @media (max-width: 576px) {
+           
+            .search-bar {
+                width: 150px;
+            }
+           
+            
+        }
+               
+              /* checking */
+		@media (min-width: 993px) {
+
+	    /* default to collapsed sidebar */
+	    .sidebar {
+	        width: 70px;
+	    }
+
+	    /* expands on hover */
+	    .sidebar:hover {
+	        width: 250px;
+	    }
+
+	    /* hides the text when collapsed */
+	    .sidebar .sidebar-header h2,
+	    .sidebar .sidebar-menu a span,
+	    .sidebar .sidebar-footer {
+	        opacity: 0;
+	        transition: opacity 0.2s ease;
+	    }
+
+	    /* shows the text when expanded */
+	    .sidebar:hover .sidebar-header h2,
+	    .sidebar:hover .sidebar-menu a span,
+	    .sidebar:hover .sidebar-footer {
+	        opacity: 1;
+	    }
+
+	    /* center the icons when collapsed */
+	    .sidebar .sidebar-menu a {
+	        justify-content: center;
+	        padding: 15px;
+	    }
+
+	    /* restore spacing on hover */
+	    .sidebar:hover .sidebar-menu a {
+	        justify-content: flex-start;
+	        padding: 12px 20px;
+	    }
+
+	    /* removes icons spacing when collapsed */
+	    .sidebar .sidebar-menu i {
+	        margin-right: 0;
+	        transition: margin-right 0.2s;
+	    }
+
+	    /* restore the iicon spacing when expanded */
+	    .sidebar:hover .sidebar-menu i {
+	        margin-right: 10px;
+	    }
+
+	    /* adjust main content so it moves smoothly */
+	    .main-content {
+	        margin-left: 70px;
+	        transition: var(--transition);
+	    }
+
+	    .sidebar:hover ~ .main-content {
+	        margin-left: 250px;
+	    }
+          /* changes size of the logo when collapsed or expanded */
+        .sidebar .sidebar-logo {
+        width: 40px;
+        height: auto;
+        transition: var(--transition);
+    }
+
+	    .sidebar:hover .sidebar-logo {
+	        width: 140px;
+	        height: auto;
+	    }
+    }
+    
         
     
