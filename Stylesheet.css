@@ -186,7 +186,106 @@
             color: var(--secondary);
         }
 
-        
+         /* Product Cards */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-header h2{
+            color: var(--primary);
+        }
+
+        .product-square-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .product-box {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .product-box:hover {
+            transform: translateY(-6px);
+        }
+
+        .product-image {
+            height: 160px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-info h3 {
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .product-box button {
+            width: 100%;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+       /* Filter Section */
+        .products-filter {
+            background: #2d2a30;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            background: #1d1a1e;
+            border: 1px solid #3a3640;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
         
        
 
