@@ -21,12 +21,14 @@
     CREATE TABLE products (
         productid INT PRIMARY KEY AUTO_INCREMENT,
         productname VARCHAR(200) NOT NULL,
-        producttype VARCHAR(100) NOT NULL,
+        categoryid INT NOT NULL, -- foreign key
         stock INT DEFAULT 0,
         description TEXT,
         price DECIMAL(10,2) NOT NULL,
+        rating DECIMAL(2,1) DEFAULT 0.0,
         imageurl VARCHAR(255),
-        reviews TEXT,
+        FOREIGN KEY (categoryid) REFERENCES categories(categoryid) -- filler for now categoryid
+
         createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
