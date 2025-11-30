@@ -1,0 +1,16 @@
+.main-content {
+    margin-left: 270px; /* Adjust as needed */
+    padding: 40px;
+}
+
+.form-wrapper {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+}
+
+#signupEmail, #loginEmail, #signupPassword, #loginPassword {
+    width: 100%;
+    box-sizing: border-box; 
+}
