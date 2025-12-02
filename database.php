@@ -1,6 +1,6 @@
 -- database setup
-CREATE DATABASE IF NOT EXISTS techforge_db;
-USE techforge_db;
+CREATE DATABASE IF NOT EXISTS cs2team61_db;
+USE cs2team61_db;
 
 CREATE TABLE users (
     userid INT PRIMARY KEY AUTO_INCREMENT,
@@ -13,15 +13,13 @@ CREATE TABLE users (
     darkmode TINYINT(1) DEFAULT 1,
     createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
--- personal timestamp and comments: eh easy to get with but unsure if i need more stuff into the users,
--- so i'm leaving this comment here as a reminder and placeholder just in case because 25/11/25
 
 CREATE TABLE categories (
     categoryid INT PRIMARY KEY AUTO_INCREMENT,
-    categoryname VARCHAR(100) NOT NULL
+    categoryname VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    createdat TIMESTAMP CURRENT_TIMESTAMP
 );
-
--- we did another oopsie so heres part of the foreignkey table because lol 
 
 CREATE TABLE products (
     productid INT PRIMARY KEY AUTO_INCREMENT,
@@ -35,4 +33,13 @@ CREATE TABLE products (
     createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (categoryid) REFERENCES categories(categoryid)
 );
--- same day.
+
+CREATE TABLE cart (
+    cartid INT PRIMARY KEY AUTO_INCREMENT,
+    userid INT NOT NULL,
+    productid INT NOT NULL,
+    quantity INT DEFAULT 1,
+    addedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+    FOREIGN KEY (productid) REFERENCES products(productid) ON DELETE CASCADE
+);
