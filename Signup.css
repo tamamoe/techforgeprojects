@@ -1,16 +1,120 @@
+/* CSS ONLY FOR LOGIN PAGE DO NOT CHANGE */
+
+:root {
+    --card-bg-start: #ffffff;
+    --card-bg-end: #f7f7ff;
+    --text-color: #434343;
+    --label-color: #4a4a4a;
+    --border-color: #d1d5db;
+    --separator-color: #e0e0e0;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode {
+    --card-bg-start: #2a2a2a;
+    --card-bg-end: #1f1f1f;   
+    --text-color: #f0f0f0;    
+    --label-color: #cccccc;   
+    --border-color: #444444;  
+    --separator-color: #383838;
+    --shadow-color: rgba(0, 0, 0, 0.9);
+}
+
+
 .main-content {
-    margin-left: 270px; /* DONT CHANGE YET */
-    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 80vh;
+    padding: 30px; 
 }
 
-.form-wrapper {
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 20px;
-}
 
-#signupEmail, #loginEmail, #signupPassword, #loginPassword {
+.auth-wrapper-card {
+    background: linear-gradient(145deg, var(--card-bg-start), var(--card-bg-end)); 
+    color: var(--text-color); 
+    padding: 3rem; 
+    border-radius: 24px; 
+    box-shadow: 0 15px 40px var(--shadow-color), 
+                0 0 10px rgba(106, 90, 205, 0.1); 
     width: 100%;
-    box-sizing: border-box; 
+    max-width: 420px; 
+    box-sizing: border-box;
+    transition: all 0.5s ease-in-out; 
+    margin-top: 30px; 
+}
+
+.auth-wrapper-card:hover {
+    transform: translateY(-2px); 
+}
+
+
+.auth-wrapper-card h2 {
+    color: var(--text-color); 
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 2.2rem;
+    font-weight: 800; 
+    text-align: center; 
+}
+
+.auth-wrapper-card label {
+    display: block; 
+    margin-top: 0.8rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: var(--label-color); 
+    font-size: 0.95rem;
+}
+
+.auth-wrapper-card input[type="email"],
+.auth-wrapper-card input[type="password"] {
+    width: 100%;
+    padding: 12px; 
+    background-color: var(--card-bg-start); 
+    color: var(--text-color);
+    border: 1px solid var(--border-color); 
+    border-radius: 10px; 
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: all 0.3s;
+    margin-bottom: 10px;
+}
+
+.auth-wrapper-card input[type="email"]:focus,
+.auth-wrapper-card input[type="password"]:focus {
+    border-color: #6a5acd; 
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.25); 
+}
+
+
+.auth-wrapper-card hr {
+    border: 0;
+    height: 1px;
+    background-color: var(--separator-color); 
+    margin: 2rem 0; 
+}
+
+
+.auth-wrapper-card .submit-btn {
+    background: linear-gradient(to right, #6a5acd, #8a2be2); 
+    color: white;
+    padding: 14px 20px; 
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 2rem; 
+    box-shadow: 0 4px 10px rgba(138, 43, 226, 0.4); 
+}
+
+.auth-wrapper-card .submit-btn:hover {
+    background: linear-gradient(to right, #5d4aaf, #7a2bd1); 
+    box-shadow: 0 6px 15px rgba(138, 43, 226, 0.6);
+    transform: translateY(-2px);
 }
