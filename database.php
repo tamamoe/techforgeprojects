@@ -34,6 +34,16 @@ CREATE TABLE products (
     FOREIGN KEY (categoryid) REFERENCES categories(categoryid)
 );
 
+CREATE TABLE orders (
+    orderid INT PRIMARY KEY AUTO_INCREMENT,
+    userid INT NOT NULL,
+    totalamount DECIMAL(10,2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    shippingaddress VARCHAR(500),
+    orderdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userid) REFERENCES users(userid)
+);
+
 CREATE TABLE cart (
     cartid INT PRIMARY KEY AUTO_INCREMENT,
     userid INT NOT NULL,
@@ -42,4 +52,24 @@ CREATE TABLE cart (
     addedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
     FOREIGN KEY (productid) REFERENCES products(productid) ON DELETE CASCADE
+);
+
+CREATE TABLE payments (
+    paymentid INT PRIMARY KEY AUTO_INCREMENT,
+    orderid INT NOT NULL,
+    paymentmethod VARCHAR(50) NOT NULL,
+    paymentstatus VARCHAR(20) DEFAULT 'pending',
+    amount DECIMAL(10,2) NOT NULL,
+    paymentdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (orderid) REFERENCES orders(orderid)
+);
+
+CREATE TABLE contacts (
+    contactid INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    subject VARCHAR(200),
+    message TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'unread',
+    submittedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
