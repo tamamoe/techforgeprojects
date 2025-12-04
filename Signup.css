@@ -1,5 +1,28 @@
 /* CSS ONLY FOR LOGIN PAGE DO NOT CHANGE */
 
+/* Fixing the top part*/
+.top-nav {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; 
+    padding: 15px 0; 
+}
+
+.nav-icons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-icon {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    transition: color 0.3s;
+    padding: 8px;
+    cursor: pointer;
+}
+
+
 :root {
     --card-bg-start: #ffffff;
     --card-bg-end: #f7f7ff;
@@ -23,10 +46,12 @@ body.dark-mode {
 
 .main-content {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     min-height: 80vh;
-    padding: 30px; 
+    padding-top: 80px; 
+    padding-left: 30px;
+    padding-right: 30px; 
 }
 
 
