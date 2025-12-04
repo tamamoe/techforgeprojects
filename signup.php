@@ -26,11 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $passwordConfirm = $_POST['signupPasswordConfirm'] ?? '';
 //Validation and security checks
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error_message = "Invalid email format.";
+        $error_message = "Invalid email try again";
     } elseif ($email !== $emailConfirm) {
-        $error_message = "Emails do not match.";
+        $error_message = "Emails do not match, try again";
     } elseif (strlen($password) < 8) {
-        $error_message = "Password must be at least 8 characters long.";
+        $error_message = "Password need to be 8 characters long, try again.";
     } elseif ($password !== $passwordConfirm) {
         $error_message = "Passwords do not match.";
     } else {
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                     
                 } else {
-                    $error_message = "Registration failed due to a database error.";
+                    $error_message = "Registration failed.";
                 }
             }
 
