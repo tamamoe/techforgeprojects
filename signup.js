@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', function() { // want to make sure 
         if (password !== passwordConfirm) { // checks if pass match
         console.error("Passwords do not match, please try again.");
         isValid = false; 
+        }
 
         if (!isValid) {
         event.preventDefault();
         }
 
-        }
     });
 });
