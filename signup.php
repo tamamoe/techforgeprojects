@@ -10,8 +10,8 @@ $charset = 'utf8mb4'; //debating between this charset or uft8 lmk
 //set up DSN and PDO options
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //throw an erro if fail
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //get results as arrays
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Invalid email try again";
     } elseif ($email !== $emailConfirm) {
-        $error_message = "Emails do not match, try again";
+        $error_message = "Emails do not match try again";
     } elseif (strlen($password) < 8) {
         $error_message = "Password need to be 8 characters long, try again.";
     } elseif ($password !== $passwordConfirm) {
@@ -52,10 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare($sql);
                 
                 if ($stmt->execute([$email, $hashed_password])) {
-                    
+                    //stores ther user ID and email in the session so they get redirected to the indexpage and stay logged in
                     $_SESSION['user_id'] = $pdo->lastInsertId();
                     $_SESSION['email'] = $email;
-                    
+                    //the link back to the homepage (index.html)
                     header('Location: index.html'); 
                     exit;
                     
