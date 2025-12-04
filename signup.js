@@ -10,14 +10,26 @@ document.addEventListener('DOMContentLoaded', function() { // want to make sure 
         const emailConfirm = document.getElementById("signupEmailConfirm").value;
         const passwordConfirm = document.getElementById("signupPasswordConfirm").value;
 
+            let isValid = true;
+
         if (email !== emailConfirm) { // checks if emails match
-            alert("Emails do not match, please try again.");
-            event.preventDefault();
+        console.error("Emails do not match, please try again.");
+        isValid = false;
+        }
+
+        if (password.length < 8) {
+         console.error("Password must be at least 8 characters long.");
+         isValid = false;
         }
 
         if (password !== passwordConfirm) { // checks if pass match
-            alert("Passwords do not matchm, please try again.");
-            event.preventDefault();
+        console.error("Passwords do not match, please try again.");
+        isValid = false; 
+
+        if (!isValid) {
+        event.preventDefault();
+        }
+
         }
     });
 });
