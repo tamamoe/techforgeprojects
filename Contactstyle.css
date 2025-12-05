@@ -1,0 +1,46 @@
+.top-banner {
+ background-color: #73418bc5; 
+ height: 75px;
+ width: 100%;
+ justify-content: center;
+ display: flex;
+ align-items: center;
+ padding: 0 20px;
+ position: relative;
+}
+.banner-text{
+ font-size: 24px;
+ font-weight: bold;
+}
+
+.banner-logo{
+ position: absolute;
+ right: 20px;
+ height:40px;
+}
+
+body {
+ margin: 0;
+ background-color: #1d1a1e;
+
+}
+
+form{
+ width: 300px;
+ margin: 0;
+}
+
+input, textarea{
+ width: 100%;
+ padding: 10px;
+ margin-bottom: 10px;
+}
+
+button{
+ padding: 10px;
+ width: 100%;
+ color: white;
+ border: none;
+ background-color: #9f7aea;
+ cursor: pointer;
+}
