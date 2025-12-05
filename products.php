@@ -157,8 +157,11 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                             echo '<i class="far fa-star"></i>';
                                         }
                                         echo " (" . number_format($rating, 1) . ")";
+<<<<<<< HEAD
 
                                         //https://stackoverflow.com/questions/44491290/display-star-in-front-end-based-on-rating also should be crediting this LOL idk
+=======
+>>>>>>> 84537c20b34d377098bb87af1a4234384b19ed73
                                         ?>
                                     </div>
                                 </div>
@@ -170,6 +173,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <p style="grid-column: 1/-1; text-align: center; padding: 40px;">No products found.</p>
                 <?php endif; ?>
             </div>
+<<<<<<< HEAD
 
         </section>
 
@@ -200,5 +204,10 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 }
  </script>
 
+=======
+        </section>
+
+ </div>
+>>>>>>> 84537c20b34d377098bb87af1a4234384b19ed73
 </body>
 </html>
