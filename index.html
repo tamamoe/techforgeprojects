@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Forge - Home</title>
-
+    <title>Home - Tech Forge</title>
     <link rel="stylesheet" href="Stylesheet.css">
+    <link rel="stylesheet" href="carousel.css">
     <script src="javascript.js" defer></script>
     <link rel="shortcut icon" href="TechForge_Logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
 
     <div class="sidebar">
@@ -21,8 +19,8 @@
         <div class="sidebar-menu">
             <ul>
                 <li><a href="index.html" class="active"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                <li><a href="product.html"><i class="fas fa-box-open"></i> <span>Product</span></a></li>
-                <li><a href="ContactUs.html"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
+                <li><a href="products.php"><i class="fas fa-box-open"></i> <span>Product</span></a></li>
+                <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
                 <li><a href="AboutUs.html"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
                 <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                 <li><a href="signup.html"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
@@ -45,10 +43,9 @@
                 <div class="nav-icons">
                     <a href="basket.html"><i class="fa-solid fa-basket-shopping"></i></a>
                     <button class="theme-toggle-btn">
-				    	<i class="fa-solid fa-moon theme-icon moon-icon"></i>
-					    <i class="fa-solid fa-sun theme-icon sun-icon"></i>
-					</button>
-
+                        <i class="fa-solid fa-moon theme-icon moon-icon"></i>
+                        <i class="fa-solid fa-sun theme-icon sun-icon"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -58,41 +55,51 @@
                 <h1>Ignite the Future of Tech.</h1>
             </div>
 
-            <div class="carousel-section">
-                <div class="carousel-box">
-                    <img src="https://via.placeholder.com/800x200/e0e0e0/333333?text=Featured+Product+Image" alt="Carousel Image">
+            <div class="carousel-wrapper">
+                <a href="#item1" class="nav-btn prev"><i class="fas fa-chevron-left"></i></a>
+                <a href="#item9" class="nav-btn next"><i class="fas fa-chevron-right"></i></a>
+
+                <div class="carousel">
+                    <div class="card" id="item1">
+                        <img src="GPU1.jpg" alt="RTX 30 Series">
+                    </div>
+                    
+                    <div class="card" id="item2">
+                        <img src="mobo1.jpg" alt="Gigabyte Eagle">
+                    </div>
+                    
+                    <div class="card" id="item3">
+                        <img src="ram1.jpg" alt="Crucial DDR5">
+                    </div>
+                    
+                    <div class="card" id="item4">
+                        <img src="GPU2.jpg" alt="Gigabyte Windforce">
+                    </div>
+                    
+                    <div class="card" id="item5">
+                        <img src="ram2.jpg" alt="Vengeance RGB">
+                    </div>
                 </div>
             </div>
-
             <div class="product-row-container">
                 <button class="arrow-btn left-arrow">&#10094;</button> 
-                
                 <div class="product-grid">
                     <div class="product-card">
-                        <div class="card-image">
-                            <img src="https://via.placeholder.com/150x200/cccccc/000000?text=GPU" alt="Product">
-                        </div>
+                        <div class="card-image"><img src="GPU1.jpg" alt="GPU"></div>
                         <h3>GPU</h3>
                         <button class="add-btn">Add to Compare</button>
                     </div>
-
                     <div class="product-card">
-                        <div class="card-image">
-                            <img src="https://via.placeholder.com/150x200/cccccc/000000?text=CPU" alt="Product">
-                        </div>
+                        <div class="card-image"><img src="mobo1.jpg" alt="CPU"></div>
                         <h3>CPU</h3>
                         <button class="add-btn">Add to Compare</button>
                     </div>
-
                     <div class="product-card">
-                        <div class="card-image">
-                            <img src="https://via.placeholder.com/150x200/cccccc/000000?text=RAM" alt="Product">
-                        </div>
+                        <div class="card-image"><img src="ram1.png" alt="RAM"></div>
                         <h3>RAM</h3>
                         <button class="add-btn">Add to Compare</button>
                     </div>
                 </div>
-
                 <button class="arrow-btn right-arrow">&#10095;</button> 
             </div>
         </div>
