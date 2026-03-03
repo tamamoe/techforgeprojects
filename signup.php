@@ -19,6 +19,7 @@ $error_message = '';
 $success_message = '';
 //Using post to make sure data has been sent 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+     if (isset($_POST['signupSubmit'])) {
     
     $email = filter_input(INPUT_POST, 'signupEmail', FILTER_SANITIZE_EMAIL);
     $emailConfirm = filter_input(INPUT_POST, 'signupEmailConfirm', FILTER_SANITIZE_EMAIL);
@@ -55,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     //stores ther user ID and email in the session so they get redirected to the indexpage and stay logged in
                     $_SESSION['user_id'] = $pdo->lastInsertId();
                     $_SESSION['email'] = $email;
-                    //the link back to the homepage (index.html)
-                    header('Location: index.html'); 
+                    //the link back to the homepage (index.php)
+                    header('Location: index.php'); 
                     exit;
                     
                 } else {
@@ -67,10 +68,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (PDOException $e) {
             $error_message = "Database connection error: " . $e->getMessage();
         }
+        }
     }
 }
+//this is if the user clicks login
+elseif (isset($_POST['loginSubmit'])) {
+        $loginEmail = filter_input(INPUT_POST, 'loginEmail', FILTER_SANITIZE_EMAIL);
+        $loginPassword = $_POST['loginPassword'] ?? '';
 
-if (!empty($error_message)) {
-    echo "<p style='color:red; text-align:center;'>Error: $error_message</p>";
-}
+        try {
+            $pdo = new PDO($dsn, $user, $pass, $options);
+            // Fetch the user's details from the database
+            $stmt = $pdo->prepare("SELECT userid, email, password FROM users WHERE email = ?");
+            $stmt->execute([$loginEmail]);
+            $userRecord = $stmt->fetch();
+
+            // password_verify checks the typed password against the hashed one in the DB!
+            if ($userRecord && password_verify($loginPassword, $userRecord['password'])) {
+                // Log them in!
+                $_SESSION['user_id'] = $userRecord['userid'];
+                $_SESSION['email'] = $userRecord['email'];
+                header('Location: index.php');
+                exit;
+            } else {
+                $error_message = "Invalid email or password.";
+            }
+        } catch (PDOException $e) {
+            $error_message = "Database error: " . $e->getMessage();
+        }
+    }
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Sign Up / login - Tech Forge</title>
+
+    <link rel="stylesheet" href="Stylesheet.css">
+    <link rel="stylesheet" href="Signup.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="javascript.js" defer></script> 
+    <script src="signup.js" defer></script>  
+
+    <link rel="shortcut icon" href="TechForge_Logo.png">
+</head>
+
+<body> 
+<div class="sidebar">
+    <div class="sidebar-header">
+        <img src="techforgecog.png" alt="logo" class="sidebar-logo">
+    </div>
+    <div class="sidebar-menu">
+        <ul>
+            <li><a href="index.php"><i class="fas fa-home"></i> <span>Home</span></a></li>
+            <li><a href="products.php"><i class="fas fa-box-open"></i> <span>Products</span></a></li>
+            <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
+            <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
+            <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+
+<?php if (isset($_SESSION['user_id'])): ?>
+                <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
+            <?php else: ?>
+                <li><a href="signup.php" class="active"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
+            <?php endif; ?>
+        </ul>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="top-nav">
+        <div class="nav-right">
+            <div class="nav-icons">
+                <a href="basket.html"><i class="fa-solid fa-basket-shopping"></i></a>
+                <button class="theme-toggle-btn">
+                    <i class="fa-solid fa-moon theme-icon moon-icon"></i>
+                    <i class="fa-solid fa-sun theme-icon sun-icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="auth-wrapper-card"> 
+            
+            <?php if (!empty($error_message)): ?>
+            <p style='color:#ff4d4d; text-align:center; font-weight:bold; margin-bottom: 15px;'><?php echo $error_message; ?></p>
+        <?php endif; ?>
+        
+        <h2>Sign Up</h2>
+        <form id ="signup-form" action="signup.php" method="post">
+            <label for="signupEmail">Email:</label><br>
+            <input type="email" id="signupEmail" name="signupEmail" required><br>
+
+            <label for="signupEmailConfirm">Confirm Email:</label><br>
+            <input type="email" id="signupEmailConfirm" name="signupEmailConfirm" required><br>
+
+            <label for="signupPassword"> Enter Password:</label><br>
+            <input type="password" id="signupPassword" name="signupPassword" required><br>
+
+            <label for="signupPasswordConfirm">Confirm Password:</label><br>  
+            <input type="password" id="signupPasswordConfirm" name="signupPasswordConfirm" required><br>
+
+            <input type="submit" name="signupSubmit" value="Sign Up" class="submit-btn">
+        </form>
+
+        <hr>
+
+        <h2>Login</h2>
+        <form action="signup.php" method="post">
+            <label for="loginEmail">Email:</label><br>
+            <input type="email" id="loginEmail" name="loginEmail" required><br><br>
+
+            <label for="loginPassword">Password:</label><br>
+            <input type="password" id="loginPassword" name="loginPassword" required><br><br>
+
+            <input type="submit" name = "loginSubmit" value="Login" class="submit-btn">
+        </form>
+        
+    </div>
+
+</div>
+
+</body>
+</html>
