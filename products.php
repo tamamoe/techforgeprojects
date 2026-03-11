@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'config.php';
 
 $category_filter = isset($_GET['category']) ? $_GET['category'] : 'all';
@@ -39,6 +40,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
+<script src="chatbot.js" defer></script>
 <body>
 
 <div class="sidebar">
@@ -47,7 +49,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div class="sidebar-menu">
             <ul>
-                <li><a href="index.html" ><i class="fas fa-home"></i> <span>Home</span></a></li>
+                <li><a href="index.php" ><i class="fas fa-home"></i> <span>Home</span></a></li>
                 <li class="flyout-parent">
     				<a href="#" class="active" class="flyout-toggle" >
         				<i class="fas fa-box-open"></i> <span>Products</span>
@@ -63,9 +65,13 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     				</div>
 				</li>
                 <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
-                <li><a href="AboutUs.html"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
+                <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
                 <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
-                <li><a href="signup.html"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
+                <?php else: ?>
+                    <li><a href="signup.php"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </div>
