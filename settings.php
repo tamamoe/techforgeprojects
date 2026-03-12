@@ -1,5 +1,95 @@
 <?php
 session_start();
+
+
+$host = 'localhost';
+$db   = 'cs2team61_db';
+$user = 'cs2team61';
+$pass = 'y6eEEvWY0VrTj9krI807dMUVy';
+$charset = 'utf8mb4'; //debating between this charset or uft8 lmk
+
+//set up DSN and PDO options
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //throw a erro if fail
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // get the results as arrays
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+$error_message = '';
+$success_message = '';
+//Using post to make sure data has been sent 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['signupSubmit'])) {
+        $email = filter_input(INPUT_POST, 'signupEmail', FILTER_SANITIZE_EMAIL);
+        $emailConfirm = filter_input(INPUT_POST, 'signupEmailConfirm', FILTER_SANITIZE_EMAIL);
+        $password = $_POST['signupPassword'] ?? '';
+        $passwordConfirm = $_POST['signupPasswordConfirm'] ?? '';
+//Validation and security checks
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error_message = "Invalid email try again";
+        } elseif ($email !== $emailConfirm) {
+            $error_message = "Emails do not match try again";
+        } elseif (strlen($password) < 8) {
+            $error_message = "Password needs to be 8 characters long, try again";
+        } elseif ($password !== $passwordConfirm) {
+            $error_message = "Passwords do not match.";
+        } else {
+            try {
+                $pdo = new PDO($dsn, $user, $pass, $options);
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+                $stmt->execute([$email]);
+                //Checks if emails already exist so there cant be duplicates
+                if ($stmt->fetchColumn() > 0) {
+                    $error_message = "This email already exists, try logging in.";
+                } else {
+                //Hashes the password for max security
+                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                    $sql = "INSERT INTO users (email, password, isadmin, darkmode) VALUES (?, ?, 0, 0)";
+                    $stmt = $pdo->prepare($sql);
+                    
+                    if ($stmt->execute([$email, $hashed_password])) {
+                        $_SESSION['user_id'] = $pdo->lastInsertId();
+                        $_SESSION['email'] = $email;
+                        header('Location: index.php'); 
+                        exit;
+                    } else {
+                        $error_message = "Registration failed.";
+                    }
+                }
+            } catch (PDOException $e) {
+                $error_message = "Database connection error: " . $e->getMessage();
+            }
+        }
+    }
+
+    // --- 2. IF THEY CLICKED 'LOGIN' ---
+    elseif (isset($_POST['loginSubmit'])) {
+        $loginEmail = filter_input(INPUT_POST, 'loginEmail', FILTER_SANITIZE_EMAIL);
+        $loginPassword = $_POST['loginPassword'] ?? '';
+
+        try {
+            $pdo = new PDO($dsn, $user, $pass, $options);
+            // Fetch the user's details from the database
+            $stmt = $pdo->prepare("SELECT userid, email, password FROM users WHERE email = ?");
+            $stmt->execute([$loginEmail]);
+            $userRecord = $stmt->fetch();
+
+            // password_verify checks the typed password against the hashed one in the DB!
+            if ($userRecord && password_verify($loginPassword, $userRecord['password'])) {
+                // Log them in!
+                $_SESSION['user_id'] = $userRecord['userid'];
+                $_SESSION['email'] = $userRecord['email'];
+                header('Location: index.php');
+                exit;
+            } else {
+                $error_message = "Invalid email or password.";
+            }
+        } catch (PDOException $e) {
+            $error_message = "Database error: " . $e->getMessage();
+        }
+    }
+   }
 ?>
 
 <!DOCTYPE html>
@@ -121,8 +211,9 @@ session_start();
                 <li><a href="products.php"><i class="fas fa-box-open"></i> <span>Products</span></a></li>
                 <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
                 <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
-                <li><a href="settings.php" class="active"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+
                 <?php if (isset($_SESSION['user_id'])): ?>
+                    <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>
                     <li><a href="signup.php"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>

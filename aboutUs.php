@@ -25,8 +25,9 @@ session_start();
                 <li><a href="products.php"><i class="fas fa-box-open"></i> <span>Products</span></a></li>
                 <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
                 <li><a href="AboutUs.php" class="active"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+
                 <?php if (isset($_SESSION['user_id'])): ?>
+                    <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>
                     <li><a href="signup.php"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
