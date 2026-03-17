@@ -125,17 +125,16 @@ body { background-color: #1d1a1e; color: var(--text); display: flex; min-height:
 /* =========================================
    PRODUCT PAGES
    ========================================= */
-.products-filter {
+ .products-filter {
     background: #2d2a30; padding: 20px; border-radius: 10px; margin-bottom: 30px;
     display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
 }
 .filter-group { display: flex; align-items: center; gap: 10px; }
-.filter-label { color: #b0b0b0; font-weight: 500; }
+.filter-label { color: #b0b0b0; font-weight: 500;  white-space: nowrap; }
 .filter-select {
     background: #1d1a1e; border: 1px solid #3a3640; color: white;
     padding: 8px 15px; border-radius: 6px; cursor: pointer;
 }
-
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .section-header h2 { color: var(--secondary); }
 
@@ -553,9 +552,15 @@ body.dark-mode .flyout-menu a {
 
 /* Contact Form Styling */
 .form-container {
-    max-width: 600px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 20px;
+}
+
+.contact-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .form-group {
@@ -594,7 +599,7 @@ body.dark-mode .flyout-menu a {
     padding: 16px;
     font-size: 1.2rem;
     font-weight: bold;
-    background-color: var(--primary); /* Purple color from your variables */
+    background-color: var(--primary); /* Purple color from the variables */
     color: white;
     border: none;
     border-radius: 8px;
@@ -602,6 +607,7 @@ body.dark-mode .flyout-menu a {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
+	box-sizing: border-box;
 }
 
 .submit-btn:hover {
@@ -624,6 +630,45 @@ body.dark-mode .flyout-menu a {
 /* Remove the old center tag styling */
 .contact-card center {
     width: 100%;
+}
+
+/* light mode for form */
+
+body.light-mode .form-container input[type="text"],
+body.light-mode .form-container input[type="email"],
+body.light-mode .form-container textarea {
+    background-color: #ffffff;
+    color: #1a1a1a;
+    border: 2px solid #dddddd;
+}
+
+body.light-mode .form-container input[type="text"]:focus,
+body.light-mode .form-container input[type="email"]:focus,
+body.light-mode .form-container textarea:focus {
+    background-color: #f9f9f9;
+    border-color: var(--primary);
+}
+
+/* dark mode for form */
+
+body.dark-mode .form-container input[type="text"],
+body.dark-mode .form-container input[type="email"],
+body.dark-mode .form-container textarea {
+    background-color: #1d1a1e; /* Slightly darker than the card to make them pop */
+    color: #ffffff;
+    border: 2px solid #3a3640;
+}
+
+body.dark-mode .form-container input[type="text"]:focus,
+body.dark-mode .form-container input[type="email"]:focus,
+body.dark-mode .form-container textarea:focus {
+    background-color: #2a242d;
+    border-color: var(--primary);
+}
+
+body.dark-mode .form-container input::placeholder,
+body.dark-mode .form-container textarea::placeholder {
+    color: #888888;
 }
 
 /* stuff that i did append for chatbot*/
@@ -993,4 +1038,294 @@ body.light-mode #cb-messages {
 @media (max-width: 480px) {
     #cb-window { width: calc(100vw - 24px); right: 12px; }
     #cb-widget  { right: 12px; bottom: 12px; }
+}
+
+/* ==========================================================
+   LIVE SEARCH DROPDOWN
+   ========================================================== */
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #2a242d;
+    border: 1px solid #3a3248;
+    border-radius: 8px;
+    margin-top: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 9999;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-bottom: 1px solid #3a3248;
+    transition: var(--transition);
+}
+
+.search-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.search-dropdown-item:hover {
+    background: rgba(159, 122, 234, 0.15); /* Light purple hover */
+}
+
+.search-dropdown-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+    background: #fff; 
+}
+
+.search-item-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-item-info h4 {
+    color: #fff;
+    font-size: 0.95rem;
+    margin-bottom: 3px;
+}
+
+.search-item-info .price {
+    color: var(--secondary);
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.no-results {
+    padding: 15px;
+    color: #888;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* light mode for search */
+body.light-mode .search-dropdown {
+    background: #ffffff;
+    border-color: #dddddd;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+body.light-mode .search-dropdown-item {
+    border-bottom-color: #eeeeee;
+}
+
+body.light-mode .search-dropdown-item:hover {
+    background: #f5f0ff; /* light purple for light mode */
+}
+
+body.light-mode .search-item-info h4 {
+    color: #1a1a1a;
+}
+
+/* ==========================================================
+   COMPARE MODAL + BUTTON FIX
+   ========================================================== */
+
+.compare-btn {
+    padding: 12px 20px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.compare-btn:hover {
+    background: var(--secondary);
+    transform: translateY(-2px);
+}
+
+/* MODAL BACKGROUND */
+.compare-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+}
+
+/* MODAL BOX */
+.compare-content {
+    background: #fff;
+    margin: 5% auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 12px;
+    overflow-x: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* TABLE STYLE */
+#compareTable table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#compareTable th {
+    background: var(--primary);
+    color: white;
+    padding: 10px;
+}
+
+#compareTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* DARK MODE FIX */
+body.dark-mode .compare-content {
+    background: #2a242d;
+    color: #fff;
+}
+
+body.dark-mode #compareTable th {
+    background: var(--secondary);
+}
+
+/* ==========================================================
+   IMAGE FIX (THIS IS YOUR MAIN ISSUE)
+   ========================================================== */
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 🔥 FIXED disappearing */
+    display: block;
+}
+
+/* fallback background so it doesn't look broken */
+.product-image {
+    background: #fff;
+}
+
+/* DARK MODE IMAGE BG */
+body.dark-mode .product-image {
+    background: #1d1a1e;
+}
+
+/* ==========================================================
+   BUTTON VISIBILITY FIX
+   ========================================================== */
+
+.product-box button {
+    display: block;
+    margin-top: 10px;
+    z-index: 2;
+    position: relative;
+}
+
+/* ensure text is visible in dark mode */
+body.dark-mode .product-box button {
+    color: #fff;
+}
+
+/* ==========================================================
+   FIX OVERFLOW ISSUES
+   ========================================================== */
+
+.product-box {
+    overflow: visible; /* stops content clipping */
+}
+
+/* =========================================
+   COMPARE PAGE
+   ========================================= */
+.compare-wrapper { max-width: 1200px; margin: 0 auto; }
+
+.compare-filter-bar { margin-bottom: 25px; }
+
+.compare-error-banner {
+    background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4);
+    border-left: 4px solid #dc3545; border-radius: 8px; padding: 14px 18px;
+    color: #ff6b6b; margin-bottom: 20px; font-size: 0.95rem;
+}
+
+/* the two side-by-side product cards */
+.compare-cards-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    position: relative; margin-bottom: 20px;
+}
+
+.compare-card {
+    background: #2a242d; border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow); border: 1px solid #3a3248;
+    position: relative; transition: var(--transition);
+}
+.compare-card:hover { transform: translateY(-4px); border-color: var(--secondary); }
+
+.compare-remove-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    position: absolute; top: 10px; right: 10px; z-index: 2;
+    background: rgba(220,53,69,0.2); color: #ff6b6b; border: 1px solid rgba(220,53,69,0.4);
+    border-radius: 20px; padding: 3px 10px; font-size: 0.75rem;
+    text-decoration: none; transition: var(--transition); cursor: pointer;
+}
+.compare-remove-btn:hover { background: rgba(220,53,69,0.4); color: #fff; }
+
+.compare-card-img {
+    height: 200px; background: var(--light); display: flex;
+    align-items: center; justify-content: center; overflow: hidden;
+}
+.compare-card-img img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+
+.compare-card-body { padding: 18px; }
+
+.compare-cat-tag {
+    display: inline-block; padding: 2px 9px; border-radius: 10px;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
+    margin-bottom: 8px; text-transform: uppercase;
+}
+/* reusing same tag colours as chatbot.js */
+.compare-cat-motherboard { background: rgba(107,70,193,0.2); color: #a78bfa; }
+.compare-cat-cpu         { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+.compare-cat-gpu         { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+.compare-cat-ram         { background: rgba(245,158,11,0.15); color: #fcd34d; }
+.compare-cat-storage     { background: rgba(59,130,246,0.15); color: #93c5fd; }
+
+.compare-product-name { font-size: 1.05rem; color: #e2d9f3; margin-bottom: 10px; line-height: 1.35; }
+
+.compare-price { font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin-bottom: 8px; }
+
+.compare-stars { color: #ffa500; font-size: 0.9rem; margin-bottom: 10px; }
+
+.compare-desc { font-size: 0.82rem; color: #9a8aaa; margin-bottom: 14px; line-height: 1.5; }
+
+.compare-cart-btn {
+    width: 100%; background: var(--primary); color: white; border: none;
+    padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold;
+    font-size: 0.9rem; transition: var(--transition);
+}
+.compare-cart-btn:hover { background: var(--secondary); }
+
+/* floating VS badge between cards -- purely visual decoration */
+.compare-vs-float {
+    display: none; /* hidden on wide screens, cards are side by side */
 }
