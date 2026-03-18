@@ -134,52 +134,69 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach($products as $product): ?>
                         <div class="product-box">
                             <div class="product-image">
-                                <?php if($product['imageurl']): ?>
-                                    <img src="<?php echo htmlspecialchars($product['imageurl']); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['productname']); ?>"
-                                         style="width:100%; height:100%; object-fit:cover;">
+                            <?php if($product['imageurl']): ?>
+                                <img src="<?php echo htmlspecialchars($product['imageurl']); ?>" 
+                                     alt="<?php echo htmlspecialchars($product['productname']); ?>"
+                                     style="width:100%; height:100%; object-fit:cover; transition: 0.3s; <?php echo ($product['stock'] <= 0) ? 'opacity: 0.4; filter: grayscale(100%);' : ''; ?>">
+                            <?php else: ?>
+                                Product Image
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="product-info">
+                            <h3><?php echo htmlspecialchars($product['productname']); ?></h3>
+                            
+                            <div style="margin-bottom: 8px; margin-top: 4px;">
+                                <?php if ($product['stock'] <= 0): ?>
+                                    <span style="color: #ff4d4d; font-size: 0.75rem; font-weight: 700; background: rgba(220,53,69,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(220,53,69,0.3);">
+                                        Out of Stock
+                                    </span>
+                                <?php elseif ($product['stock'] <= 5): ?>
+                                    <span style="color: #ffc107; font-size: 0.75rem; font-weight: 700; background: rgba(255,193,7,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,193,7,0.3);">
+                                        Low Stock: <?php echo $product['stock']; ?>
+                                    </span>
                                 <?php else: ?>
-                                    Product Image
+                                    <span style="color: #28a745; font-size: 0.75rem; font-weight: 700; background: rgba(40,167,69,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(40,167,69,0.3);">
+                                        Stock: <?php echo $product['stock']; ?>
+                                    </span>
                                 <?php endif; ?>
                             </div>
-                            <div class="product-info">
-                                <h3><?php echo htmlspecialchars($product['productname']); ?></h3>
-                                <p><?php echo htmlspecialchars(substr($product['description'], 0, 60)); ?>...</p>
-                                <div class="product-price">
+
+                            <p><?php echo htmlspecialchars(substr($product['description'], 0, 60)); ?>...</p>
+                            
+                            <div class="product-price">
+                                <?php if ($product['stock'] <= 0): ?>
+                                    <span class="price" style="color: #ff4d4d; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px;">SOLD OUT!</span>
+                                <?php else: ?>
                                     <span class="price">£<?php echo number_format($product['price'], 2); ?></span>
-                                    <div style="color: #ffa500;">
-                                        <?php 
-                                        $rating = $product['rating'];
-                                        $full_stars = floor($rating);
-                                        $half_star = ($rating - $full_stars) >= 0.5;
-                                        
-                                        for($i = 0; $i < $full_stars; $i++) {
-                                            echo '<i class="fas fa-star"></i>';
-                                        }
-                                        if($half_star) {
-                                            echo '<i class="fas fa-star-half-alt"></i>';
-                                        }
-                                        for($i = $full_stars + ($half_star ? 1 : 0); $i < 5; $i++) {
-                                            echo '<i class="far fa-star"></i>';
-                                        }
-                                        echo " (" . number_format($rating, 1) . ")";
-
-                                        //https://stackoverflow.com/questions/44491290/display-star-in-front-end-based-on-rating also should be crediting this LOL idk
-                                        ?>
-                                    </div>
+                                <?php endif; ?>
+                                
+                                <div style="color: #ffa500;">
+                                    <?php 
+                                    $rating = $product['rating'];
+                                    $full_stars = floor($rating);
+                                    $half_star = ($rating - $full_stars) >= 0.5;
+                                    
+                                    for($i = 0; $i < $full_stars; $i++) {
+                                        echo '<i class="fas fa-star"></i>';
+                                    }
+                                    if($half_star) {
+                                        echo '<i class="fas fa-star-half-alt"></i>';
+                                    }
+                                    for($i = $full_stars + ($half_star ? 1 : 0); $i < 5; $i++) {
+                                        echo '<i class="far fa-star"></i>';
+                                    }
+                                    echo " (" . number_format($rating, 1) . ")";
+                                    ?>
                                 </div>
-                                <button onclick="addToCart(<?php echo $product['productid']; ?>)">Add to Cart</button>
                             </div>
+                            
+                            <?php if ($product['stock'] <= 0): ?>
+                                <button style="background: #3a3248; color: #888; cursor: not-allowed; border: 1px solid #3a3248;" disabled>Unavailable</button>
+                            <?php else: ?>
+                                <button onclick="addToCart(<?php echo $product['productid']; ?>)">Add to Cart</button>
+                            <?php endif; ?>
                         </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p style="grid-column: 1/-1; text-align: center; padding: 40px;">No products found.</p>
-                <?php endif; ?>
-            </div>
-
-        </section>
-
- </div>
 
  <script>
     //https://stackoverflow.com/questions/76004372/i-want-to-add-products-to-the-shopping-cart-in-php my goat thank you for this
