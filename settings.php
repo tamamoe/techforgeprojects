@@ -63,21 +63,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // --- 2. IF THEY CLICKED 'LOGIN' ---
+  
     elseif (isset($_POST['loginSubmit'])) {
         $loginEmail = filter_input(INPUT_POST, 'loginEmail', FILTER_SANITIZE_EMAIL);
         $loginPassword = $_POST['loginPassword'] ?? '';
 
         try {
             $pdo = new PDO($dsn, $user, $pass, $options);
-            // Fetch the user's details from the database
+  
             $stmt = $pdo->prepare("SELECT userid, email, password FROM users WHERE email = ?");
             $stmt->execute([$loginEmail]);
             $userRecord = $stmt->fetch();
 
-            // password_verify checks the typed password against the hashed one in the DB!
             if ($userRecord && password_verify($loginPassword, $userRecord['password'])) {
-                // Log them in!
                 $_SESSION['user_id'] = $userRecord['userid'];
                 $_SESSION['email'] = $userRecord['email'];
                 header('Location: index.php');
@@ -213,6 +211,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+    <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
+<?php endif; ?>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>

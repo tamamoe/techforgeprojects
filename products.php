@@ -48,7 +48,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div class="sidebar-menu">
             <ul>
-                <li><a href="index.html" ><i class="fas fa-home"></i> <span>Home</span></a></li>
+                <li><a href="index.php" ><i class="fas fa-home"></i> <span>Home</span></a></li>
                 <li class="flyout-parent">
     				<a href="#" class="active" class="flyout-toggle" >
         				<i class="fas fa-box-open"></i> <span>Products</span>
@@ -67,6 +67,9 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+    <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
+<?php endif; ?>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>
@@ -195,10 +198,11 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <button style="background: #3a3248; color: #888; cursor: not-allowed; border: 1px solid #3a3248;" disabled>Unavailable</button>
                             <?php else: ?>
                                 <button onclick="addToCart(<?php echo $product['productid']; ?>)">Add to Cart</button>
-                            <?php endif; ?>
-                        </div>
-
- <script>
+                                <?php endif; ?>
+                        </div> </div> <?php endforeach; ?>
+            <?php endif; ?>
+        </div> </section>
+</div> <script>
     //https://stackoverflow.com/questions/76004372/i-want-to-add-products-to-the-shopping-cart-in-php my goat thank you for this
     function addToCart(productId) {
     fetch('add_to_cart.php', {

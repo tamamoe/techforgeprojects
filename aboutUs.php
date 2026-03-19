@@ -27,6 +27,9 @@ session_start();
                 <li><a href="AboutUs.php" class="active"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+    <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
+<?php endif; ?>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>
