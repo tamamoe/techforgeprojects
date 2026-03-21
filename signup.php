@@ -152,42 +152,49 @@ elseif (isset($_POST['loginSubmit'])) {
     </div>
 
     
-    <div class="auth-wrapper-card"> 
+<div class="auth-split-container"> 
             
-            <?php if (!empty($error_message)): ?>
-            <p style='color:#ff4d4d; text-align:center; font-weight:bold; margin-bottom: 15px;'><?php echo $error_message; ?></p>
+        <?php if (!empty($error_message)): ?>
+            <div class="global-error-message">
+                <?php echo $error_message; ?>
+            </div>
         <?php endif; ?>
         
-        <h2>Sign Up</h2>
-        <form id ="signup-form" action="signup.php" method="post">
-            <label for="signupEmail">Email:</label><br>
-            <input type="email" id="signupEmail" name="signupEmail" required><br>
+        <div class="auth-box">
+            <h2 class="aldrich-regular">Login</h2>
+            <form action="signup.php" method="post">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" name="loginEmail" required>
 
-            <label for="signupEmailConfirm">Confirm Email:</label><br>
-            <input type="email" id="signupEmailConfirm" name="signupEmailConfirm" required><br>
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="loginPassword" required>
 
-            <label for="signupPassword"> Enter Password:</label><br>
-            <input type="password" id="signupPassword" name="signupPassword" required><br>
+                <input type="submit" name="loginSubmit" value="Login" class="submit-btn">
+            </form>
+        </div>
 
-            <label for="signupPasswordConfirm">Confirm Password:</label><br>  
-            <input type="password" id="signupPasswordConfirm" name="signupPasswordConfirm" required><br>
+<div class="auth-box">
+            <h2 class="aldrich-regular">Sign Up</h2>
+            
+            <div id="js-signup-error" class="global-error-message" style="display: none; margin-bottom: 15px;"></div>
+            
+            <form id="signup-form" action="signup.php" method="post">
+                <label for="signupEmail">Email:</label>
+                <input type="email" id="signupEmail" name="signupEmail" required>
 
-            <input type="submit" name="signupSubmit" value="Sign Up" class="submit-btn">
-        </form>
+                <label for="signupEmailConfirm">Confirm Email:</label>
+                <input type="email" id="signupEmailConfirm" name="signupEmailConfirm" required>
 
-        <hr>
+                <label for="signupPassword">Enter Password:</label>
+                <input type="password" id="signupPassword" name="signupPassword" required>
 
-        <h2>Login</h2>
-        <form action="signup.php" method="post">
-            <label for="loginEmail">Email:</label><br>
-            <input type="email" id="loginEmail" name="loginEmail" required><br><br>
+                <label for="signupPasswordConfirm">Confirm Password:</label>  
+                <input type="password" id="signupPasswordConfirm" name="signupPasswordConfirm" required>
 
-            <label for="loginPassword">Password:</label><br>
-            <input type="password" id="loginPassword" name="loginPassword" required><br><br>
+                <input type="submit" name="signupSubmit" value="Sign Up" class="submit-btn">
+            </form>
+        </div>
 
-            <input type="submit" name = "loginSubmit" value="Login" class="submit-btn">
-        </form>
-        
     </div>
 
 </div>
