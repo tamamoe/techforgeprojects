@@ -22,28 +22,48 @@ try {
     $is_admin = isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1;
 
     
- //REFUND PART DONT CHANGE
+//REFUND PART DONT CHANGE
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['order_id'])) {
         $order_id = (int)$_POST['order_id'];
         
- 
         if ($_POST['action'] === 'request_return' && !$is_admin) {
             $update_stmt = $pdo->prepare("UPDATE orders SET status = 'return_requested' WHERE orderid = ? AND userid = ?");
             $update_stmt->execute([$order_id, $_SESSION['user_id']]);
-            
-
-            header("Location: orders.php");
-            exit;
         } 
         // ADMIN approval for refund
         elseif ($_POST['action'] === 'process_return' && $is_admin) {
             $update_stmt = $pdo->prepare("UPDATE orders SET status = 'returned' WHERE orderid = ?");
             $update_stmt->execute([$order_id]);
-            
-            
-            header("Location: orders.php");
-            exit;
         }
+        elseif ($_POST['action'] === 'mark_processing' && $is_admin) {
+            $update_stmt = $pdo->prepare("UPDATE orders SET status = 'processing' WHERE orderid = ?");
+            $update_stmt->execute([$order_id]);
+        }
+        elseif ($_POST['action'] === 'mark_shipped' && $is_admin) {
+            $update_stmt = $pdo->prepare("UPDATE orders SET status = 'shipped' WHERE orderid = ?");
+            $update_stmt->execute([$order_id]);
+        }
+        elseif ($_POST['action'] === 'mark_delivered' && $is_admin) {
+            $update_stmt = $pdo->prepare("UPDATE orders SET status = 'delivered' WHERE orderid = ?");
+            $update_stmt->execute([$order_id]);
+        }
+
+           
+    //review stuff dont change
+    
+
+        elseif ($_POST['action'] === 'submit_review' && !$is_admin) {
+            $rating = (int)$_POST['rating'];
+        //security check (report include)
+            $review_text = htmlspecialchars($_POST['review_text']); 
+            
+            $insert_review = $pdo->prepare("INSERT INTO reviews (orderid, userid, rating, review_text) VALUES (?, ?, ?, ?)");
+            $insert_review->execute([$order_id, $_SESSION['user_id'], $rating, $review_text]);
+        }
+        
+
+        header("Location: orders.php");
+        exit;
     }
  
 
@@ -283,23 +303,75 @@ $status_colors = [
                                         <?php echo strtoupper(str_replace('_', ' ', $order['status'])); ?>
                                     </span>
                                 </td>
-                                    <?php if (!$is_admin && $can_return): ?>
-        <form method="POST" style="display:inline;" onsubmit="return confirm('are you sure you want to refund this item?');">
+
+    <td style="text-align: right; min-width: 250px;">
+    <?php if (!$is_admin && $can_return && $status === 'delivered'): ?>
+        <form method="POST" style="display:inline; margin-bottom: 10px; display: block;" onsubmit="return confirm('Are you sure you want to request a refund?');">
             <input type="hidden" name="action" value="request_return">
             <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
-            <button type="submit" class="btn-return"><i class="fas fa-undo"></i> Request Refund</button>
+            <button type="submit" class="btn-return"><i class="fas fa-undo"></i> Refund</button>
         </form>
     <?php endif; ?>
 
-    <?php if ($is_admin && $status === 'return_requested'): ?>
-        <form method="POST" style="display:inline;" onsubmit="return confirm('approve refund????');">
-            <input type="hidden" name="action" value="process_return">
-            <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
-            <button type="submit" class="btn-return" style="border-color: #28a745; color: #28a745;">
-                <i class="fas fa-check"></i> Approve Refund
-            </button>
-        </form>
+    <?php if (!$is_admin && $status === 'delivered'): ?>
+        <?php if (!empty($order['rating'])): ?>
+            <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; text-align: left; margin-top: 10px;">
+                <div style="color: #ffc107; font-size: 0.9rem; margin-bottom: 5px;">
+                    <?php for($i=1; $i<=5; $i++) echo ($i <= $order['rating']) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>'; ?>
+                </div>
+                <p style="font-size: 0.85rem; color: #b0b0b0; margin: 0; font-style: italic;">"<?php echo $order['review_text']; ?>"</p>
+            </div>
+        <?php else: ?>
+            <form method="POST" style="margin-top: 10px; text-align: left; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                <input type="hidden" name="action" value="submit_review">
+                <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
+                
+                <select name="rating" required style="width: 100%; padding: 5px; margin-bottom: 8px; background: #1d1a1e; color: white; border: 1px solid #3a3248; border-radius: 4px;">
+                    <option value="">Rate your order...</option>
+                    <option value="5">⭐⭐⭐⭐⭐ (5/5) excellent</option>
+                    <option value="4">⭐⭐⭐⭐ (4/5) good</option>
+                    <option value="3">⭐⭐⭐ (3/5) average</option>
+                    <option value="2">⭐⭐ (2/5) Bad</option>
+                    <option value="1">⭐ (1/5) awful</option>
+                </select>
+                
+                <textarea name="review_text" required placeholder="Write your review here..." style="width: 100%; padding: 8px; background: #1d1a1e; color: white; border: 1px solid #3a3248; border-radius: 4px; font-size: 0.85rem; margin-bottom: 8px; resize: vertical; min-height: 50px;"></textarea>
+                
+                <button type="submit" class="btn-return" style="border-color: #ffc107; color: #ffc107; width: 100%;">
+                    <i class="fas fa-paper-plane"></i> Submit Review
+                </button>
+            </form>
+        <?php endif; ?>
     <?php endif; ?>
+
+    <?php if ($is_admin): ?>
+        <?php if ($status === 'pending'): ?>
+            <form method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="mark_processing">
+                <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
+                <button type="submit" class="btn-return" style="border-color: #17a2b8; color: #17a2b8;"><i class="fas fa-box"></i> Process</button>
+            </form>
+        <?php elseif ($status === 'processing'): ?>
+            <form method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="mark_shipped">
+                <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
+                <button type="submit" class="btn-return" style="border-color: #6f42c1; color: #6f42c1;"><i class="fas fa-truck"></i> Ship</button>
+            </form>
+        <?php elseif ($status === 'shipped'): ?>
+            <form method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="mark_delivered">
+                <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
+                <button type="submit" class="btn-return" style="border-color: #28a745; color: #28a745;"><i class="fas fa-box-open"></i> Deliver</button>
+            </form>
+        <?php elseif ($status === 'return_requested'): ?>
+            <form method="POST" style="display:inline;" onsubmit="return confirm('Approve this refund?');">
+                <input type="hidden" name="action" value="process_return">
+                <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
+                <button type="submit" class="btn-return" style="border-color: #dc3545; color: #dc3545;"><i class="fas fa-check-circle"></i> Approve Refund</button>
+            </form>
+        <?php endif; ?>
+    <?php endif; ?>
+</td>
 </td>
 
                             </tr>

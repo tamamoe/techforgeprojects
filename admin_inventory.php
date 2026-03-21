@@ -43,6 +43,15 @@ try {
         $feedback_message = "<div class='success-msg'><i class='fas fa-check-circle'></i> Stock updated successfully!</div>";
     }
 
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_product'])) {
+        $delete_id = $_POST['product_id'];
+        
+        $delete_stmt = $pdo->prepare("UPDATE products SET is_deleted = 1 WHERE productid = :id");
+        $delete_stmt->execute(['id' => $delete_id]);
+        $feedback_message = "<div class='success-msg' style='color: #ffc107; margin-bottom: 15px;'><i class='fas fa-info-circle'></i> Product marked as N/A!</div>";
+}
+
+
     $search_query = "";
     if (isset($_GET['search']) && trim($_GET['search']) !== '') {
         $search_query = trim($_GET['search']);
@@ -283,18 +292,33 @@ try {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($products as $product): ?>
-                            <tr>
+            <?php foreach ($products as $product): 
+                            
+                            $is_deleted = isset($product['is_deleted']) && $product['is_deleted'] == 1;
+                            $row_style = $is_deleted ? "opacity: 0.4; background: rgba(0,0,0,0.2);" : "";
+                        ?>
+                            
+                            <tr style="<?php echo $row_style; ?>">
+                                
                                 <td style="padding: 15px; border-bottom: 1px solid #3a3248;">
                                     <?php if(!empty($product['imageurl'])): ?>
-                                        <img src="<?php echo htmlspecialchars($product['imageurl']); ?>" width="50" style="border-radius:5px;">
+                                        <img src="<?php echo htmlspecialchars($product['imageurl']); ?>" width="50" style="border-radius:5px; <?php echo $is_deleted ? 'filter: grayscale(100%);' : ''; ?>">
                                     <?php endif; ?>
                                 </td>
-                                <td style="padding: 15px; border-bottom: 1px solid #3a3248;"><?php echo htmlspecialchars($product['productname']); ?></td>
+                                
+                                <td style="padding: 15px; border-bottom: 1px solid #3a3248;">
+                                    <?php if($is_deleted) echo "<s>"; ?>
+                                    <?php echo htmlspecialchars($product['productname']); ?>
+                                    <?php if($is_deleted) echo "</s>"; ?>
+                                </td>
+                                
                                 <td style="padding: 15px; border-bottom: 1px solid #3a3248;">£<?php echo number_format($product['price'], 2); ?></td>
+                                
                                 <td style="padding: 15px; border-bottom: 1px solid #3a3248;">
                                     <?php 
-                                        if ($product['stock'] <= 0) {
+                                        if ($is_deleted) {
+                                            echo "<span style='color: #888888; font-weight: bold;'>N/A (Discontinued)</span>";
+                                        } elseif ($product['stock'] <= 0) {
                                             echo "<span style='color: #ff4d4d; font-weight: bold;'>Out of Stock</span>";
                                         } elseif ($product['stock'] < 10) {
                                             echo "<span style='color: #ffc107; font-weight: bold;'>Low Stock (" . $product['stock'] . ")</span>";
@@ -303,12 +327,20 @@ try {
                                         }
                                     ?>
                                 </td>
-                                <td style="padding: 15px; border-bottom: 1px solid #3a3248;">
-                                    <form method="POST" action="admin_inventory.php" style="flex-direction: row; gap: 10px; align-items: center;">
-                                        <input type="hidden" name="product_id" value="<?php echo $product['productid']; ?>">
-                                        <input type="number" name="new_stock" value="<?php echo $product['stock']; ?>" min="0" style="width: 70px; margin-bottom: 0; padding: 10px;">
-                                        <button type="submit" name="update_stock" class="submit-btn" style="margin-top: 0; padding: 10px 15px;">Save</button>
-                                    </form>
+<td style="padding: 15px; border-bottom: 1px solid #3a3248;">
+                                    <?php if ($is_deleted): ?>
+                                        <span style="color: #b0b0b0; font-style: italic;"><i class="fas fa-ban"></i> Cannot Modify</span>
+                                    <?php else: ?>
+                                        <form method="POST" action="admin_inventory.php" style="flex-direction: row; gap: 10px; align-items: center;">
+                                            <input type="hidden" name="product_id" value="<?php echo $product['productid']; ?>">
+                                            <input type="number" name="new_stock" value="<?php echo $product['stock']; ?>" min="0" style="width: 70px; margin-bottom: 0; padding: 10px;">
+                                            <button type="submit" name="update_stock" class="submit-btn" style="margin-top: 0; padding: 10px 15px;"><i class="fas fa-save"></i> Save</button>
+                                            
+                                            <button type="submit" name="delete_product" style="background: rgba(220, 53, 69, 0.2); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 10px 15px; border-radius: 6px; cursor: pointer;" onclick="return confirm('Are you sure you want to mark this product as N/A? It cannot be undone.');">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

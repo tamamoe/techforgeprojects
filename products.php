@@ -5,9 +5,9 @@ require_once 'config.php';
 $category_filter = isset($_GET['category']) ? $_GET['category'] : 'all';
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 
-$sql = "SELECT p.*, c.categoryname  FROM products p 
-LEFT JOIN categories c ON p.categoryid = c.categoryid 
-        WHERE 1=1";
+$sql = "SELECT p.*, c.categoryname FROM products p 
+        LEFT JOIN categories c ON p.categoryid = c.categoryid 
+        WHERE p.is_deleted = 0";
 
 if ($category_filter != 'all') { $sql .= " AND c.categoryname = :category"; }
 
