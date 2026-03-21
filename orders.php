@@ -21,6 +21,33 @@ try {
 
     $is_admin = isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1;
 
+    
+ //REFUND PART DONT CHANGE
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['order_id'])) {
+        $order_id = (int)$_POST['order_id'];
+        
+ 
+        if ($_POST['action'] === 'request_return' && !$is_admin) {
+            $update_stmt = $pdo->prepare("UPDATE orders SET status = 'return_requested' WHERE orderid = ? AND userid = ?");
+            $update_stmt->execute([$order_id, $_SESSION['user_id']]);
+            
+
+            header("Location: orders.php");
+            exit;
+        } 
+        // ADMIN approval for refund
+        elseif ($_POST['action'] === 'process_return' && $is_admin) {
+            $update_stmt = $pdo->prepare("UPDATE orders SET status = 'returned' WHERE orderid = ?");
+            $update_stmt->execute([$order_id]);
+            
+            
+            header("Location: orders.php");
+            exit;
+        }
+    }
+ 
+
+
     if ($is_admin) {
         $stmt = $pdo->query("SELECT o.orderid, o.ordernumber, o.totalamount, o.status, o.orderdate, u.email
                              FROM orders o
@@ -256,13 +283,25 @@ $status_colors = [
                                         <?php echo strtoupper(str_replace('_', ' ', $order['status'])); ?>
                                     </span>
                                 </td>
-                                <td style="text-align: right;">
                                     <?php if (!$is_admin && $can_return): ?>
-                                        <button class="btn-return" onclick="alert('Return functionality coming soon.')">
-                                            Request Return
-                                        </button>
-                                    <?php endif; ?>
-                                </td>
+        <form method="POST" style="display:inline;" onsubmit="return confirm('are you sure you want to refund this item?');">
+            <input type="hidden" name="action" value="request_return">
+            <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
+            <button type="submit" class="btn-return"><i class="fas fa-undo"></i> Request Refund</button>
+        </form>
+    <?php endif; ?>
+
+    <?php if ($is_admin && $status === 'return_requested'): ?>
+        <form method="POST" style="display:inline;" onsubmit="return confirm('approve refund????');">
+            <input type="hidden" name="action" value="process_return">
+            <input type="hidden" name="order_id" value="<?php echo $order['orderid']; ?>">
+            <button type="submit" class="btn-return" style="border-color: #28a745; color: #28a745;">
+                <i class="fas fa-check"></i> Approve Refund
+            </button>
+        </form>
+    <?php endif; ?>
+</td>
+
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

@@ -218,6 +218,7 @@ try {
                         <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
                         <li><a href="admin_reports.php" class="active"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
                     <?php endif; ?>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>

@@ -70,6 +70,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
     <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
 <?php endif; ?>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>
