@@ -43,10 +43,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <li><a href="ContactUs.php" class="active"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
                 <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
-    <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
-                <li><a href="admin_reports.php" class="active"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
-<?php endif; ?>
+                    <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+                        <li><a href="admin_panel.php"><i class="fas fa-shield-halved"></i> <span>Admin Panel</span></a></li>
+                        <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>All Orders</span></a></li>
+                    <?php else: ?>
+                        <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
+                    <?php endif; ?>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>

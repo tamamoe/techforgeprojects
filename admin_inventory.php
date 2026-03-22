@@ -1,67 +1,43 @@
 <?php
 session_start();
+require_once 'config.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: signup.php");
-    exit; 
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['isadmin']) || $_SESSION['isadmin'] != 1) {
+    header("Location: index.php");
+    exit;
 }
 
-$host = 'localhost';
-$db   = 'cs2team61_db';
-$user = 'cs2team61';
-$pass = 'y6eEEvWY0VrTj9krI807dMUVy'; 
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-
-
-    $stmt = $pdo->prepare("SELECT isadmin FROM users WHERE userid = :userid");
-    $stmt->execute(['userid' => $_SESSION['user_id']]);
-    $currentUser = $stmt->fetch();
-
-    if (!$currentUser || $currentUser['isadmin'] != 1) {
-        header("Location: index.php");
-        exit;
-    }
 
 
     $feedback_message = "";
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_stock'])) {
         $update_id = $_POST['product_id'];
         $new_stock = $_POST['new_stock'];
-        
+
         $update_stmt = $pdo->prepare("UPDATE products SET stock = :stock WHERE productid = :id");
         $update_stmt->execute(['stock' => $new_stock, 'id' => $update_id]);
         $feedback_message = "<div class='success-msg'><i class='fas fa-check-circle'></i> Stock updated successfully!</div>";
     }
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_product'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_product'])) {
         $delete_id = $_POST['product_id'];
-        
+
         $delete_stmt = $pdo->prepare("UPDATE products SET is_deleted = 1 WHERE productid = :id");
         $delete_stmt->execute(['id' => $delete_id]);
         $feedback_message = "<div class='success-msg' style='color: #ffc107; margin-bottom: 15px;'><i class='fas fa-info-circle'></i> Product marked as N/A!</div>";
 }
 
-
     $search_query = "";
     if (isset($_GET['search']) && trim($_GET['search']) !== '') {
         $search_query = trim($_GET['search']);
-        
+
 
         $fetch_stmt = $pdo->prepare("SELECT * FROM products WHERE productname LIKE ? OR description LIKE ? ORDER BY stock ASC");
-        
+
         $search_term = "%" . $search_query . "%";
         $fetch_stmt->execute([$search_term, $search_term]);
-        
+
     } else {
         $fetch_stmt = $pdo->query("SELECT * FROM products ORDER BY stock ASC");
     }
@@ -77,16 +53,19 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard - Tech Forge</title>
-    
+
     <link rel="stylesheet" href="Stylesheet.css">
     <link rel="stylesheet" href="Signup.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <script src="javascript.js" defer></script> 
     <script src="signup.js" defer></script>  
 
     <link rel="shortcut icon" href="TechForge_Logo.png">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
     <style>
 
         /* SPLIT LAYOUT STYLES */
@@ -171,7 +150,7 @@ try {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
         }
-        
+
         .global-error-message {
             width: 100%;
             max-width: 1250px; 
@@ -191,7 +170,7 @@ try {
             border-color: #dddddd;
             box-shadow: 0 8px 25px rgba(0,0,0,0.05);
         }
-        
+
         body.light-mode .auth-box h2 {
             border-bottom-color: #eeeeee;
         }
@@ -221,9 +200,35 @@ try {
                 margin: 20px auto;
             }
         }
+    @media (max-width: 768px) {
+    .auth-box {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 20px 15px !important;
+        box-sizing: border-box !important;
+        flex: 1 1 100% !important;
+    }
+    .auth-split-container {
+        padding: 10px !important;
+        margin: 10px auto !important;
+        width: 100% !important;
+    }
+    .auth-box form[method="GET"] {
+        flex-direction: column !important;
+    }
+    .auth-box form[method="GET"] input {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin-bottom: 10px !important;
+    }
+    .auth-box form[method="GET"] button {
+        width: 100% !important;
+    }
+}
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
 <div class="sidebar">
     <div class="sidebar-header">
@@ -238,9 +243,11 @@ try {
             <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+                    <li><a href="admin_panel.php"><i class="fas fa-shield-halved"></i> <span>Admin Panel</span></a></li>
                     <li><a href="admin_inventory.php" class="active"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
+                    <li><a href="admin_reports.php"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>All Orders</span></a></li>
                 <?php endif; ?>
-                <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
                 <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
             <?php else: ?>
@@ -251,14 +258,14 @@ try {
 </div>
 
 <div class="main-content">
-    
-    <div class="top-nav">
-        <div class="nav-left">
+
+    <div class="top-nav mobile-top-nav">
+        <div class="nav-left mobile-nav-left">
             <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        <div class="nav-right">
+        <div class="nav-right mobile-nav-right">
             <div class="nav-icons">
                 <a href="basket.php"><i class="fa-solid fa-basket-shopping"></i></a>
                 <button class="theme-toggle-btn">
@@ -272,7 +279,7 @@ try {
     <div class="auth-split-container">
         <div class="auth-box" style="max-width: 1000px; flex: 1 1 100%;">
             <h2 class="aldrich-regular"><i class="fas fa-boxes"></i> Inventory Manager</h2>
-            
+
             <form method="GET" action="admin_inventory.php" style="flex-direction: row; gap: 10px; margin-bottom: 20px;">
                 <input type="text" name="search" placeholder="Search products..." value="<?php echo htmlspecialchars($search_query); ?>" style="flex-grow: 1; margin-bottom: 0;">
                 <button type="submit" class="submit-btn" style="margin-top: 0;"><i class="fas fa-search"></i> Search</button>
@@ -293,27 +300,27 @@ try {
                     </thead>
                     <tbody>
             <?php foreach ($products as $product): 
-                            
+
                             $is_deleted = isset($product['is_deleted']) && $product['is_deleted'] == 1;
                             $row_style = $is_deleted ? "opacity: 0.4; background: rgba(0,0,0,0.2);" : "";
                         ?>
-                            
+
                             <tr style="<?php echo $row_style; ?>">
-                                
+
                                 <td style="padding: 15px; border-bottom: 1px solid #3a3248;">
                                     <?php if(!empty($product['imageurl'])): ?>
                                         <img src="<?php echo htmlspecialchars($product['imageurl']); ?>" width="50" style="border-radius:5px; <?php echo $is_deleted ? 'filter: grayscale(100%);' : ''; ?>">
                                     <?php endif; ?>
                                 </td>
-                                
+
                                 <td style="padding: 15px; border-bottom: 1px solid #3a3248;">
                                     <?php if($is_deleted) echo "<s>"; ?>
                                     <?php echo htmlspecialchars($product['productname']); ?>
                                     <?php if($is_deleted) echo "</s>"; ?>
                                 </td>
-                                
+
                                 <td style="padding: 15px; border-bottom: 1px solid #3a3248;">£<?php echo number_format($product['price'], 2); ?></td>
-                                
+
                                 <td style="padding: 15px; border-bottom: 1px solid #3a3248;">
                                     <?php 
                                         if ($is_deleted) {
@@ -335,7 +342,7 @@ try {
                                             <input type="hidden" name="product_id" value="<?php echo $product['productid']; ?>">
                                             <input type="number" name="new_stock" value="<?php echo $product['stock']; ?>" min="0" style="width: 70px; margin-bottom: 0; padding: 10px;">
                                             <button type="submit" name="update_stock" class="submit-btn" style="margin-top: 0; padding: 10px 15px;"><i class="fas fa-save"></i> Save</button>
-                                            
+
                                             <button type="submit" name="delete_product" style="background: rgba(220, 53, 69, 0.2); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 10px 15px; border-radius: 6px; cursor: pointer;" onclick="return confirm('Are you sure you want to mark this product as N/A? It cannot be undone.');">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -350,6 +357,9 @@ try {
         </div>
     </div>
 </div>
-
+<script>
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.body.classList.add(savedTheme === 'dark' ? 'dark-mode' : 'light-mode');
+</script>
 </body>
 </html>

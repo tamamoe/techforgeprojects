@@ -21,8 +21,7 @@ try {
 
     $is_admin = isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1;
 
-    
-//REFUND PART DONT CHANGE
+ //REFUND PART DONT CHANGE
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && isset($_POST['order_id'])) {
         $order_id = (int)$_POST['order_id'];
         
@@ -47,8 +46,7 @@ try {
             $update_stmt = $pdo->prepare("UPDATE orders SET status = 'delivered' WHERE orderid = ?");
             $update_stmt->execute([$order_id]);
         }
-
-           
+    
     //review stuff dont change
     
 
@@ -61,21 +59,23 @@ try {
             $insert_review->execute([$order_id, $_SESSION['user_id'], $rating, $review_text]);
         }
         
-
         header("Location: orders.php");
         exit;
     }
  
-
 
     if ($is_admin) {
         $stmt = $pdo->query("SELECT o.orderid, o.ordernumber, o.totalamount, o.status, o.orderdate, u.email
                              FROM orders o
                              JOIN users u ON o.userid = u.userid
                              ORDER BY o.orderdate DESC");
+    
     } else {
-        $stmt = $pdo->prepare("SELECT orderid, ordernumber, totalamount, status, orderdate
-                               FROM orders WHERE userid = ? ORDER BY orderdate DESC");
+       //added reviews here 
+        $stmt = $pdo->prepare("SELECT o.orderid, o.ordernumber, o.totalamount, o.status, o.orderdate, r.rating, r.review_text
+                               FROM orders o 
+                               LEFT JOIN reviews r ON o.orderid = r.orderid
+                               WHERE o.userid = ? ORDER BY o.orderdate DESC");
         $stmt->execute([$_SESSION['user_id']]);
     }
 
@@ -227,10 +227,10 @@ $status_colors = [
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
                     <li><a href="admin_panel.php"><i class="fas fa-shield-halved"></i> <span>Admin Panel</span></a></li>
-                    <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
-                    <li><a href="admin_reports.php"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
+                    <li><a href="orders.php" class="active"><i class="fas fa-receipt"></i> <span>All Orders</span></a></li>
+                <?php else: ?>
+                    <li><a href="orders.php" class="active"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
                 <?php endif; ?>
-                <li><a href="orders.php" class="active"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
                 <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
             <?php else: ?>
@@ -303,8 +303,8 @@ $status_colors = [
                                         <?php echo strtoupper(str_replace('_', ' ', $order['status'])); ?>
                                     </span>
                                 </td>
-
-    <td style="text-align: right; min-width: 250px;">
+                                
+                                <td style="text-align: right; min-width: 250px;">
     <?php if (!$is_admin && $can_return && $status === 'delivered'): ?>
         <form method="POST" style="display:inline; margin-bottom: 10px; display: block;" onsubmit="return confirm('Are you sure you want to request a refund?');">
             <input type="hidden" name="action" value="request_return">
@@ -373,7 +373,6 @@ $status_colors = [
     <?php endif; ?>
 </td>
 </td>
-
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

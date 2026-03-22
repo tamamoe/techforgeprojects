@@ -14,6 +14,12 @@ try {
     $low_stock_query = $pdo->query("SELECT productname, categoryname, price, stock FROM products LEFT JOIN categories ON products.categoryid = categories.categoryid WHERE stock <= 5 ORDER BY stock ASC");
     $low_stock_items = $low_stock_query->fetchAll(PDO::FETCH_ASSOC);
 
+    $orders_query = $pdo->query("SELECT o.ordernumber, o.totalamount, o.status, o.orderdate, u.email FROM orders o JOIN users u ON o.userid = u.userid ORDER BY o.orderdate DESC LIMIT 50");
+    $orders = $orders_query->fetchAll(PDO::FETCH_ASSOC);
+
+    $order_metrics_query = $pdo->query("SELECT COUNT(*) as total_orders, SUM(totalamount) as total_revenue FROM orders");
+    $order_metrics = $order_metrics_query->fetch(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
     die("Report Generation Failed: " . $e->getMessage());
 }
@@ -33,6 +39,8 @@ try {
     <script src="signup.js" defer></script>  
 
     <link rel="shortcut icon" href="TechForge_Logo.png">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
     
     <style>
         .auth-split-container {
@@ -198,6 +206,22 @@ try {
                 gap: 30px;
             }
         }
+		@media (max-width: 768px) {
+    .auth-split-container {
+        padding: 10px !important;
+        margin: 10px auto !important;
+        width: 100% !important;
+        gap: 15px !important;
+    }
+    .auth-box {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 20px 15px !important;
+        box-sizing: border-box !important;
+        flex: 1 1 100% !important;
+    }
+}	
     </style>
 </head>
 <body>
@@ -215,10 +239,11 @@ try {
                 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+                        <li><a href="admin_panel.php"><i class="fas fa-shield-halved"></i> <span>Admin Panel</span></a></li>
                         <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
                         <li><a href="admin_reports.php" class="active"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
+                        <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>All Orders</span></a></li>
                     <?php endif; ?>
-                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
                     <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                     <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
                 <?php else: ?>
@@ -229,19 +254,19 @@ try {
     </div>
 
     <div class="main-content">
-        <div class="top-nav">
-            <div class="nav-left">
+        <div class="top-nav mobile-top-nav">
+            <div class="nav-left mobile-nav-left">
                 <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
             </div>
-            <div class="nav-right">
+            <div class="nav-right mobile-nav-right">
                 <div class="nav-icons"><button class="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button></div>
             </div>
         </div>
 
         <div class="auth-split-container">
             <div class="dashboard-header">
-                <h1 class="aldrich-regular">Inventory Reports</h1>
-                <p>Real-time overview of warehouse stock.</p>
+                <h1 class="aldrich-regular">Stock Report</h1>
+                <p>Overview of the stock we have.</p>
             </div>
 
             <div class="auth-box">
@@ -256,6 +281,22 @@ try {
                         <i class="fas fa-boxes"></i>
                         <h3>Total Items in Stock</h3>
                         <p><?php echo number_format($metrics['total_items'] ?? 0); ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-box">
+                <h2><i class="fas fa-shopping-bag" style="margin-right: 10px;"></i> Orders Overview</h2>
+                <div class="metric-content">
+                    <div class="metric-item">
+                        <i class="fas fa-receipt"></i>
+                        <h3>Total Orders</h3>
+                        <p><?php echo number_format($order_metrics['total_orders'] ?? 0); ?></p>
+                    </div>
+                    <div class="metric-item">
+                        <i class="fas fa-pound-sign"></i>
+                        <h3>Total Revenue</h3>
+                        <p>£<?php echo number_format($order_metrics['total_revenue'] ?? 0, 2); ?></p>
                     </div>
                 </div>
             </div>
@@ -298,6 +339,49 @@ try {
                     <div style="text-align: center; padding: 30px; color: #b0b0b0;">
                         <i class="fas fa-check-circle" style="font-size: 3rem; color: #48bb78; margin-bottom: 15px;"></i>
                         <p>All products are sufficiently stocked. No immediate restocks required.</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <div class="auth-box" style="flex: 1 1 100%;">
+                <h2><i class="fas fa-history" style="margin-right: 10px;"></i> Past Orders</h2>
+
+                <?php if (count($orders) > 0): ?>
+                    <div style="overflow-x: auto;">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Number</th>
+                                    <th>Customer Email</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($orders as $order): ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars($order['ordernumber']); ?></strong></td>
+                                        <td><?php echo htmlspecialchars($order['email']); ?></td>
+                                        <td>£<?php echo number_format($order['totalamount'], 2); ?></td>
+                                        <td>
+                                            <?php
+                                                $status = strtolower($order['status']);
+                                                $badge_class = $status === 'pending' ? 'status-warning' : ($status === 'cancelled' ? 'status-danger' : '');
+                                            ?>
+                                            <span class="status-badge <?php echo $badge_class; ?>" style="<?php echo $badge_class ? '' : 'background:rgba(74,222,128,0.15);color:#4ade80;border:1px solid rgba(74,222,128,0.3);'; ?>">
+                                                <?php echo strtoupper($order['status']); ?>
+                                            </span>
+                                        </td>
+                                        <td><?php echo date('d M Y, H:i', strtotime($order['orderdate'])); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <div style="text-align: center; padding: 30px; color: #b0b0b0;">
+                        <i class="fas fa-inbox" style="font-size: 3rem; color: #6b7280; margin-bottom: 15px;"></i>
+                        <p>No orders have been placed yet.</p>
                     </div>
                 <?php endif; ?>
             </div>
