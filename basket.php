@@ -2,37 +2,6 @@
 session_start();
 require_once 'config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ajax_flag'])) {
-    header('Content-Type: application/json');
-    $product_id = $_POST['product_id'];
-    $quantity = (int)$_POST['quantity'];
-
-    if ($quantity < 1) {
-        echo json_encode(['success' => false, 'message' => 'Quantity must be at least 1']);
-        exit;
-    }
-
-    if (isset($_SESSION['user_id'])) {
-        $user_id = $_SESSION['user_id'];
-        try {
-            $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE userid = ? AND productid = ?");
-            $stmt->execute([$quantity, $user_id, $product_id]);
-            echo json_encode(['success' => true]);
-        } catch(PDOException $e) {
-            echo json_encode(['success' => false, 'message' => 'Database error']);
-        }
-    } else {
-        if (isset($_SESSION['cart'][$product_id])) {
-            $_SESSION['cart'][$product_id]['quantity'] = $quantity;
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Item not in cart']);
-        }
-    }
-    exit; 
-}
-
-
 // Initialize variables
 $cart_items = [];
 $total_price = 0;
@@ -40,7 +9,7 @@ $shipping = 4.99;
 
 // Check if user is logged in
 if(isset($_SESSION['user_id'])) {
-    
+    // LOGGED IN USER - Get cart from database
     $user_id = $_SESSION['user_id'];
     
     try {
@@ -63,7 +32,7 @@ if(isset($_SESSION['user_id'])) {
         $error_message = "Error loading cart";
     }
 } else {
-    
+    // GUEST USER - Get cart from session
     if(isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
         $product_ids = array_keys($_SESSION['cart']);
         
@@ -492,12 +461,12 @@ $grand_total = $total_price + $shipping;
             return;
         }
         
-        fetch('basket.php', {
+        fetch('update_cart.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: 'product_id=' + productId + '&quantity=' + quantity + '&update_ajax_flag=1'
+            body: 'product_id=' + productId + '&quantity=' + quantity
         })
         .then(response => response.json())
         .then(data => {
