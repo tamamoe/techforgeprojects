@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Aldrich&display=swap');
+
 /* =========================================
    GLOBAL RESET & VARIABLES
    ========================================= */
@@ -50,7 +52,7 @@ body { background-color: #1d1a1e; color: var(--text); display: flex; min-height:
 .sidebar-menu i { font-size: 1.4rem; min-width: 30px; text-align: center; margin-right: 0; transition: var(--transition); }
 .sidebar:hover .sidebar-menu i { margin-right: 10px; }
 
-.sidebar-menu span { opacity: 0; transition: opacity 0.2s ease; display: none; }
+.sidebar-menu span { opacity: 0; transition: opacity 0.2s ease; display: none; font-family: "Aldrich", sans-serif; }
 .sidebar:hover .sidebar-menu span { opacity: 1; display: inline-block; }
 
 .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(255,255,255,0.1); color: white; border-left: 4px solid var(--secondary); }
@@ -94,7 +96,13 @@ body { background-color: #1d1a1e; color: var(--text); display: flex; min-height:
     text-align: center; margin-bottom: 15px; padding: 15px;
     background-color: #f2d5ff; border: 2px solid #000;
 }
-.tagline-section h1 { font-size: 1.8rem; margin: 0; font-weight: bold; }
+.tagline-section h1 { 
+    font-size: 1.8rem; 
+    margin: 0; 
+    font-weight: bold; 
+    font-family: "Aldrich", sans-serif; /* custom font */
+    text-transform: uppercase;
+}
 
 .carousel-section {
     margin-bottom: 20px; border: 2px solid #000; padding: 5px; background: #fff;
@@ -139,7 +147,7 @@ body { background-color: #1d1a1e; color: var(--text); display: flex; min-height:
 .section-header h2 { color: var(--secondary); }
 
 .product-square-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;
 }
 .product-box {
     background: white; border-radius: 10px; overflow: hidden;
@@ -241,7 +249,7 @@ input:checked + .slider:before { transform: translateX(24px); }
 @media (max-width: 768px) {
     .sidebar { transform: translateX(-100%); width: 250px; }
     .sidebar.active { transform: translateX(0); }
-    .sidebar-menu span { display: inline-block; opacity: 1; }
+    .sidebar-menu span { display: inline-block; opacity: 1; font-family: "Aldrich", sans-serif; }
     .sidebar-menu a { justify-content: flex-start; padding: 12px 20px; }
     .sidebar-logo { width: 140px; }
     .main-content { margin-left: 0; }
@@ -366,12 +374,17 @@ body.dark-mode .sidebar {
 }
 
 /* dark-mode boxes */
+body.dark-mode .product-card,
 body.dark-mode .product-box,
 body.dark-mode .about-card,
 body.dark-mode .contact-card,
 body.dark-mode .settings-card,
 body.dark-mode .auth-card {
     background: #2a242d; 
+    color: #ffffff;
+}
+
+body.dark-mode .product-card h3 {
     color: #ffffff;
 }
 
@@ -1217,7 +1230,7 @@ body.dark-mode #compareTable th {
 .product-image img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* 🔥 FIXED disappearing */
+    object-fit: contain; /* ðŸ”¥ FIXED disappearing */
     display: block;
 }
 
@@ -1329,3 +1342,78 @@ body.dark-mode .product-box button {
 .compare-vs-float {
     display: none; /* hidden on wide screens, cards are side by side */
 }
+
+/* ==========================================================
+   LIGHT MODE OVERRIDES FOR CHECKOUT PAGE
+   ========================================================== */
+
+        body.light-mode .checkout-form,
+        body.light-mode .order-summary,
+        body.light-mode .login-prompt-checkout {
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-mode .checkout-header p,
+        body.light-mode .form-group label,
+        body.light-mode .checkbox-label,
+        body.light-mode .item-info p,
+        body.light-mode .item-quantity,
+        body.light-mode .summary-line,
+        body.light-mode .secure-badge,
+        body.light-mode .login-prompt-checkout p {
+            color: #555555;
+        }
+
+        body.light-mode .item-info h4,
+        body.light-mode .summary-total,
+        body.light-mode .payment-method span,
+        body.light-mode #paypal-message,
+        body.light-mode #apple-message {
+            color: #1a1a1a;
+        }
+
+        body.light-mode .form-section,
+        body.light-mode .order-summary h2,
+        body.light-mode .summary-item {
+            border-bottom-color: #eeeeee;
+        }
+
+        body.light-mode .summary-total {
+            border-top-color: #dddddd;
+        }
+
+        body.light-mode .form-group input, 
+        body.light-mode .form-group select,
+        body.light-mode .form-group textarea,
+        body.light-mode .payment-method,
+        body.light-mode #paypal-message,
+        body.light-mode #apple-message {
+            background: #f9f9f9;
+            border: 1px solid #dddddd;
+            color: #1a1a1a;
+        }
+
+        body.light-mode .form-group input:focus,
+        body.light-mode .form-group select:focus,
+        body.light-mode .form-group textarea:focus {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+        }
+
+        body.light-mode .payment-method:hover {
+            background: #f0f0f0;
+            border-color: var(--secondary);
+        }
+
+        body.light-mode .payment-method.selected {
+            background: rgba(107, 70, 193, 0.1);
+            border-color: var(--primary);
+        }
+
+		.aldrich-regular {
+ 		font-family: "Aldrich", sans-serif;
+  		font-weight: 400;
+  		font-style: normal;
+		}
