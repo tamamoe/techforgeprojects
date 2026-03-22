@@ -16,13 +16,13 @@ document.addEventListener('DOMContentLoaded', function() { // want to make sure 
             let errorMessage = ""; 
             
             if (email !== emailConfirm) { 
-                errorMessage = "Emails do not match, please try again.";
+                errorMessage = "Emails do not match try again.";
                 isValid = false;
             } else if (password.length < 8) {
                 errorMessage = "Password must be at least 8 characters long.";
                 isValid = false;
             } else if (password !== passwordConfirm) { 
-                errorMessage = "Passwords do not match, please try again.";
+                errorMessage = "Passwords do not match try again.";
                 isValid = false; 
             }
 
