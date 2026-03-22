@@ -1,6 +1,3 @@
-/* CSS ONLY FOR LOGIN PAGE DO NOT CHANGE */
-
-/* Fixing the top part*/
 .top-nav {
     width: 100%;
     display: flex;
@@ -49,24 +46,25 @@ body.dark-mode {
     flex-direction: column;
     align-items: center;
     min-height: 80vh;
-    padding-top: 80px; 
+    padding-top: 15px; 
     padding-left: 30px;
     padding-right: 30px; 
 }
 
 
 .auth-wrapper-card {
-      background: linear-gradient(to bottom, var(--card-bg-start), var(--card-bg-end)); /* needed for light and dark mode colour switch*/
-    color: #333; 
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-    max-width: 400px;
+    background: linear-gradient(145deg, var(--card-bg-start), var(--card-bg-end)); 
+    color: var(--text-color); 
+    padding: 3rem; 
+    border-radius: 24px; 
+    box-shadow: 0 15px 40px var(--shadow-color), 
+                0 0 10px rgba(106, 90, 205, 0.1); 
     width: 100%;
-    margin-top: 20px;
+    max-width: 420px; 
     box-sizing: border-box;
+    transition: all 0.5s ease-in-out; 
+    margin-top: 30px; 
 }
-
 
 .auth-wrapper-card:hover {
     transform: translateY(-2px); 
@@ -112,7 +110,6 @@ body.dark-mode {
     box-shadow: 0 0 0 4px rgba(106, 90, 205, 0.25); 
 }
 
-
 .auth-wrapper-card hr {
     border: 0;
     height: 1px;
@@ -120,19 +117,26 @@ body.dark-mode {
     margin: 2rem 0; 
 }
 
+
+
 .auth-wrapper-card .submit-btn {
-    background-color: #6a5acd; 
+    background: linear-gradient(to right, #6a5acd, #8a2be2); 
     color: white;
-    padding: 12px 18px;
+    padding: 14px 20px; 
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
     width: 100%;
-    margin-top: 1.5rem;
-    transition: background-color 0.2s ease;
+    margin-top: 2rem; 
+    box-shadow: 0 4px 10px rgba(138, 43, 226, 0.4); 
 }
 
 .auth-wrapper-card .submit-btn:hover {
-    background-color: #5d4aaf; 
+    background: linear-gradient(to right, #5d4aaf, #7a2bd1); 
+    box-shadow: 0 6px 15px rgba(138, 43, 226, 0.6);
+    transform: translateY(-2px);
 }
