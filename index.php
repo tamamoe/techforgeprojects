@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,12 +22,20 @@
         </div>
         <div class="sidebar-menu">
             <ul>
-                <li><a href="index.html" class="active"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                <li><a href="product.html"><i class="fas fa-box-open"></i> <span>Product</span></a></li>
-                <li><a href="ContactUs.html"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
-                <li><a href="AboutUs.html"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
-                <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
-                <li><a href="signup.html"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
+                <li><a href="index.php" class="active"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                <li><a href="products.php"><i class="fas fa-box-open"></i> <span>Product</span></a></li>
+                <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
+                <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
+
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+    <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
+<?php endif; ?>
+                    <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                    <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
+                <?php else: ?>
+                    <li><a href="signup.php"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </div>
