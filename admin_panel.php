@@ -76,7 +76,8 @@ try {
     <script src="javascript.js" defer></script>
     <script src="signup.js" defer></script>
     <link rel="shortcut icon" href="TechForge_Logo.png">
-
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
     <style>
         .admin-container {
             max-width: 1300px;
@@ -289,6 +290,28 @@ try {
             .form-group.full-width { grid-column: 1; }
             .form-box { padding: 25px 20px; }
         }
+                                                  
+	@media (max-width: 768px) {
+    .admin-container,
+    .auth-split-container {
+        width: 100% !important;
+        padding: 10px !important;
+        margin: 10px auto !important;
+        box-sizing: border-box !important;
+    }
+    .auth-box,
+    .form-box {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 20px 15px !important;
+        box-sizing: border-box !important;
+        flex: 1 1 100% !important;
+    }
+    .panel-cards {
+        grid-template-columns: 1fr !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -308,6 +331,7 @@ try {
                     <li><a href="admin_panel.php" class="active"><i class="fas fa-shield-halved"></i> <span>Admin Panel</span></a></li>
                     <li><a href="admin_inventory.php"><i class="fas fa-boxes"></i> <span>Manage Stock</span></a></li>
                     <li><a href="admin_reports.php"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>All Orders</span></a></li>
                 <?php endif; ?>
                 <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
@@ -319,13 +343,13 @@ try {
 </div>
 
 <div class="main-content">
-    <div class="top-nav">
-        <div class="nav-left">
+    <div class="top-nav mobile-top-nav">
+        <div class="nav-left mobile-nav-left">
             <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        <div class="nav-right">
+        <div class="nav-right mobile-nav-right">
             <div class="nav-icons">
                 <button class="theme-toggle-btn">
                     <i class="fa-solid fa-moon theme-icon moon-icon"></i>

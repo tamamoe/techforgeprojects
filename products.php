@@ -8,7 +8,7 @@ $search_query = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $sql = "SELECT p.*, c.categoryname FROM products p 
         LEFT JOIN categories c ON p.categoryid = c.categoryid 
-        WHERE 1=1";
+        WHERE p.is_deleted = 0";
 
 if ($category_filter != 'all') $sql .= " AND c.categoryname = :category";
 if (!empty($search_query)) $sql .= " AND (p.productname LIKE :search OR p.description LIKE :search)";
@@ -34,12 +34,21 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Products - Tech Forge</title>
-    <link rel="stylesheet" href="Stylesheet.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="TechForge_Logo.png">
+
+    <link rel="stylesheet" href="Stylesheet.css">
+    <link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
+    
     <script src="javascript.js" defer></script>
     <script src="chatbot.js" defer></script>
-    <link rel="shortcut icon" href="TechForge_Logo.png">
 </head>
 <body>
 
@@ -55,6 +64,12 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
             <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
             <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+                    <li><a href="admin_panel.php"><i class="fas fa-shield-halved"></i> <span>Admin Panel</span></a></li>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>All Orders</span></a></li>
+                <?php else: ?>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
+                <?php endif; ?>
                 <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
             <?php else: ?>
@@ -65,7 +80,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <div class="main-content">
-    <div class="top-nav">
+    <div class="top-nav mobile-top-nav"">
         <div class="nav-left">
             <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">
                 <i class="fas fa-bars"></i>
@@ -85,7 +100,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div id="search-results-dropdown" class="search-dropdown" style="display:none;"></div>
             </div>
         </div>
-        <div class="nav-right">
+        <div class="nav-right mobile-nav-right">
             <div class="nav-icons">
                 <a href="basket.php"><i class="fa-solid fa-basket-shopping"></i></a>
                 <button class="theme-toggle-btn">
@@ -124,7 +139,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <section>
         <div class="section-header">
-            <h2>All Products (<?php echo count($products); ?>)</h2>
+            <h2 class="aldrich-regular">All Products (<?php echo count($products); ?>)</h2>
         </div>
 
         <?php if (!empty($search_query)): ?>
@@ -137,23 +152,46 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php if (count($products) > 0): ?>
                 <?php foreach($products as $product): ?>
                     <div class="product-box">
-                        <div class="product-image">
+                <div class="product-image">
                             <?php if ($product['imageurl']): ?>
                                 <img src="<?php echo htmlspecialchars($product['imageurl']); ?>"
                                      alt="<?php echo htmlspecialchars($product['productname']); ?>"
-                                     style="width:100%; height:100%; object-fit:cover;">
+                                     style="width:100%; height:100%; object-fit:cover; transition: 0.3s; <?php echo ($product['stock'] <= 0) ? 'opacity: 0.4; filter: grayscale(100%);' : ''; ?>">
                             <?php else: ?>
                                 Product Image
                             <?php endif; ?>
                         </div>
+                        
                         <div class="product-info">
                             <h3><?php echo htmlspecialchars($product['productname']); ?></h3>
-                            <p style="font-size:0.85rem; color:#888; margin-bottom:6px;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; margin-top: 4px;">
                                 <span class="category-badge"><?php echo htmlspecialchars($product['categoryname']); ?></span>
-                            </p>
+                                
+                                <?php if ($product['stock'] <= 0): ?>
+                                    <span style="color: #ff4d4d; font-size: 0.75rem; font-weight: 700; background: rgba(220,53,69,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(220,53,69,0.3);">
+                                        Out of Stock
+                                    </span>
+                                <?php elseif ($product['stock'] <= 5): ?>
+                                    <span style="color: #ffc107; font-size: 0.75rem; font-weight: 700; background: rgba(255,193,7,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,193,7,0.3);">
+                                        Low Stock: <?php echo $product['stock']; ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span style="color: #28a745; font-size: 0.75rem; font-weight: 700; background: rgba(40,167,69,0.1); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(40,167,69,0.3);">
+                                        Stock: <?php echo $product['stock']; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+
                             <p><?php echo htmlspecialchars(substr($product['description'], 0, 60)); ?>...</p>
+                            
                             <div class="product-price">
-                                <span class="price">£<?php echo number_format($product['price'], 2); ?></span>
+                                <?php if ($product['stock'] <= 0): ?>
+                                    <span class="price" style="color: #ff4d4d; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px;">SOLD OUT!</span>
+                                <?php else: ?>
+                                    <span class="price">£<?php echo number_format($product['price'], 2); ?></span>
+                                <?php endif; ?>
+                                
                                 <div style="color:#ffa500;">
                                     <?php
                                     $rating     = $product['rating'];
@@ -166,10 +204,18 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     ?>
                                 </div>
                             </div>
+                            
                             <div class="product-btn-group">
-                                <button class="btn-cart" onclick="addToCart(<?php echo $product['productid']; ?>)">
-                                    <i class="fas fa-cart-plus"></i> Add to Cart
-                                </button>
+                                <?php if ($product['stock'] <= 0): ?>
+                                    <button class="btn-cart" style="background: #3a3248; color: #888; cursor: not-allowed; border: 1px solid #3a3248;" disabled>
+                                        <i class="fas fa-ban"></i> Unavailable
+                                    </button>
+                                <?php else: ?>
+                                    <button class="btn-cart" onclick="addToCart(<?php echo $product['productid']; ?>)">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                <?php endif; ?>
+                                
                                 <button class="btn-compare"
                                     onclick="handleCompare(this)"
                                     data-id="<?php echo $product['productid']; ?>"
@@ -196,7 +242,6 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     </section>
 </div>
 
-<!-- ===================== COMPARE BAR ===================== -->
 <div id="compare-bar">
     <div class="compare-bar-inner">
         <div class="compare-bar-left">
@@ -216,7 +261,6 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<!-- ===================== TOAST ===================== -->
 <div id="compare-toast"></div>
 
 <style>

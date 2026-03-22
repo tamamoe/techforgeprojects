@@ -36,11 +36,20 @@ $showing_compare = $p1 && $p2 && $same_cat;
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Compare Products - Tech Forge</title>
-<link rel="stylesheet" href="Stylesheet.css">
-<script src="javascript.js" defer></script>
-<link rel="shortcut icon" href="TechForge_Logo.png">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Products - Tech Forge</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="TechForge_Logo.png">
+
+    <link rel="stylesheet" href="Stylesheet.css">
+    <link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
+    
+    <script src="javascript.js" defer></script>
 <style>
 /* ── Two-column card grid ── */
 .cmp-grid {
@@ -193,6 +202,12 @@ body.light-mode .pick-reset          { color: #a78bfa; }
             <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
             <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (isset($_SESSION['isadmin']) && $_SESSION['isadmin'] == 1): ?>
+                    <li><a href="admin_panel.php"><i class="fas fa-shield-halved"></i> <span>Admin Panel</span></a></li>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>All Orders</span></a></li>
+                <?php else: ?>
+                    <li><a href="orders.php"><i class="fas fa-receipt"></i> <span>My Orders</span></a></li>
+                <?php endif; ?>
                 <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Sign Out</span></a></li>
             <?php else: ?>
@@ -203,23 +218,41 @@ body.light-mode .pick-reset          { color: #a78bfa; }
 </div>
 
 <div class="main-content">
-    <div class="top-nav">
-        <div class="nav-left">
+    <div class="top-nav mobile-top-nav">
+        <div class="nav-left mobile-nav-left">
             <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')"><i class="fas fa-bars"></i></button>
-            <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Search products..."></div>
-        </div>
-        <div class="nav-right">
-            <div class="nav-icons">
-                <a href="basket.php"><i class="fa-solid fa-basket-shopping"></i></a>
-                <button class="theme-toggle-btn"><i class="fa-solid fa-moon theme-icon moon-icon"></i><i class="fa-solid fa-sun theme-icon sun-icon"></i></button>
+            
+            <?php $current_search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>
+            <div class="search-bar" style="position: relative;">
+                <i class="fas fa-search"></i>
+                <form action="products.php" method="GET" style="display: flex; width: 100%; margin: 0; align-items: center;">
+                    <input type="text" name="search" id="live-search-input" placeholder="Search products..." autocomplete="off" value="<?php echo $current_search; ?>" style="flex-grow: 1;">
+                    <?php if (!empty($current_search)): ?>
+                        <a href="products.php" style="color: #718096; text-decoration: none; padding: 0 10px;" title="Clear Search">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    <?php endif; ?>
+                </form>
+                <div id="search-results-dropdown" class="search-dropdown" style="display: none;"></div>
             </div>
         </div>
-    </div>
-
+                    
+        <div class="nav-right mobile-nav-right">
+            <div class="nav-icons">
+                <a href="basket.php" class="nav-icon-link">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                </a>
+                <button class="theme-toggle-btn nav-icon-link">
+                    <i class="fa-solid fa-moon theme-icon moon-icon"></i>
+                    <i class="fa-solid fa-sun theme-icon sun-icon"></i>
+                </button>
+            </div>
+        </div>
+	</div>
+                    
     <div class="compare-wrapper">
-        <div class="section-header"><h2><i class="fas fa-scale-balanced" style="margin-right:8px"></i>Compare Products</h2></div>
+        <div class="section-header"><h2 class="aldrich-regular"><i class="fas fa-scale-balanced" style="margin-right:8px"></i>Compare Products</h2></div>
 
-        <!-- me when i filter -->
         <form method="GET" action="compare.php" class="products-filter compare-filter-bar">
             <div class="filter-group">
                 <span class="filter-label"><i class="fas fa-filter" style="margin-right:5px"></i>Category:</span>
@@ -236,7 +269,6 @@ body.light-mode .pick-reset          { color: #a78bfa; }
         </form>
 
         <?php if ($p1 && $p2 && !$same_cat): ?>
-        <!-- cross-category error -->
         <div class="compare-error-banner">
             <i class="fas fa-triangle-exclamation"></i>
             Cannot compare a <strong><?= htmlspecialchars($p1['categoryname']) ?></strong> with a <strong><?= htmlspecialchars($p2['categoryname']) ?></strong>.
@@ -246,7 +278,6 @@ body.light-mode .pick-reset          { color: #a78bfa; }
 
         <?php elseif ($showing_compare): ?>
 
-        <!-- side-by-side product cards, styled to match products.php -->
         <div class="cmp-grid">
             <?php
             $pairs = [[$p1, $id_a, $id_b], [$p2, $id_b, $id_a]];
@@ -276,8 +307,6 @@ body.light-mode .pick-reset          { color: #a78bfa; }
             <div class="cmp-vs-divider">VS</div>
         </div>
 
-        <!-- compare specs section -->
-        <!-- JS populates this from the PRODUCTS table below, matched by productid -->
         <div class="compare-specs-section">
             <h2 class="compare-specs-title"><i class="fas fa-microchip"></i> Full Specifications</h2>
             <div id="compare-specs-table"
@@ -291,7 +320,6 @@ body.light-mode .pick-reset          { color: #a78bfa; }
 
         <?php else: ?>
 
-        <!-- picker UI -->
         <form method="GET" action="compare.php" class="compare-pick-form">
             <?php if ($cat_filter) echo '<input type="hidden" name="category" value="'.htmlspecialchars($cat_filter).'">'; ?>
 
@@ -308,7 +336,6 @@ body.light-mode .pick-reset          { color: #a78bfa; }
             <?php endif; ?>
 
             <div class="pick-slots">
-                <!-- Slot A -->
                 <div class="pick-slot-card">
                     <div class="pick-slot-icon"><i class="fas fa-cube"></i></div>
                     <div class="pick-slot-label">Product 1</div>
@@ -320,10 +347,8 @@ body.light-mode .pick-reset          { color: #a78bfa; }
                     </select>
                 </div>
 
-                <!-- VS pill -->
                 <div class="pick-vs">VS</div>
 
-                <!-- Slot B -->
                 <div class="pick-slot-card">
                     <div class="pick-slot-icon"><i class="fas fa-cube"></i></div>
                     <div class="pick-slot-label">Product 2</div>
@@ -351,7 +376,7 @@ body.light-mode .pick-reset          { color: #a78bfa; }
 </div>
 
 <script>
-// this hurts to hardcode but from chatbot
+// PRODUCTS table -- same as chatbot.js, needed to render spec rows by product id
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 const PRODUCTS = [
   { id:1,  name:"MSI B650 GAMING PLUS WIFI",       category:"motherboard", price:134.49, stock:15, rating:4.5, socket:"AM5",     chipset:"B650",  ddr:"DDR5", formfactor:"ATX",    wifi:"Yes",  specs:"ATX, Socket AM5, DDR5, WiFi, Bluetooth" },
@@ -385,7 +410,7 @@ const PRODUCTS = [
   { id:29, name:"WD Black SN850X 4TB",              category:"storage", price:301.23, stock:8,  rating:4.9, capacity:"4 TB",   gen:"Gen 4", read:"7300 MB/s",  write:"6600 MB/s" },
 ];
 
-// fields based on category
+// spec fields per category -- what rows to show in the spec table
 // labels mapped to accessor functions
 const SPEC_FIELDS = {
     motherboard: [["Socket",      p => p.socket],["Chipset",      p => p.chipset],["Memory Type", p => p.ddr],["Form Factor",  p => p.formfactor],["WiFi",         p => p.wifi]],
@@ -414,7 +439,7 @@ if (tableEl) {
         const specRows = fields.map(([label, fn]) => [label, String(fn(pa) ?? '—'), String(fn(pb) ?? '—'), null]);
         const allRows = [...baseRows, ...specRows];
 
-        // winner logic for numbers
+        // winner logic -- only for numeric comparison, ignores units
         function numericWinner(a, b, prefer) {
             const na = parseFloat(a.replace(/[^\d.]/g,'')), nb = parseFloat(b.replace(/[^\d.]/g,''));
             if (isNaN(na) || isNaN(nb) || na === nb) return '';
@@ -457,7 +482,7 @@ if (tableEl) {
     }
 }
 
-// add to cart stolen
+// add to cart -- same as products.php obviously
 // https://stackoverflow.com/questions/76004372/i-want-to-add-products-to-the-shopping-cart-in-php
 function addToCart(productId) {
     fetch('add_to_cart.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'product_id='+productId })
