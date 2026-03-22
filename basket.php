@@ -2,7 +2,38 @@
 session_start();
 require_once 'config.php';
 
-// Initialize variables
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ajax_flag'])) {
+    header('Content-Type: application/json');
+    $product_id = $_POST['product_id'];
+    $quantity = (int)$_POST['quantity'];
+
+    if ($quantity < 1) {
+        echo json_encode(['success' => false, 'message' => 'Quantity must be at least 1']);
+        exit;
+    }
+
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+        try {
+            $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE userid = ? AND productid = ?");
+            $stmt->execute([$quantity, $user_id, $product_id]);
+            echo json_encode(['success' => true]);
+        } catch(PDOException $e) {
+            echo json_encode(['success' => false, 'message' => 'Database error']);
+        }
+    } else {
+        if (isset($_SESSION['cart'][$product_id])) {
+            $_SESSION['cart'][$product_id]['quantity'] = $quantity;
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Item not in cart']);
+        }
+    }
+    exit; 
+}
+
+
+
 $cart_items = [];
 $total_price = 0;
 $shipping = 4.99;
@@ -32,7 +63,7 @@ if(isset($_SESSION['user_id'])) {
         $error_message = "Error loading cart";
     }
 } else {
-    // GUEST USER - Get cart from session
+
     if(isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
         $product_ids = array_keys($_SESSION['cart']);
         
@@ -63,21 +94,35 @@ if(isset($_SESSION['user_id'])) {
     }
 }
 
+if ($total_price > 200) {
+    $shipping = $total_price * 0.025; // 2.5% of subtotal if over 200
+} else {
+    $shipping = 4.99; // standard if 200 or under
+}
+
 $grand_total = $total_price + $shipping;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Basket - Tech Forge</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aldrich&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="TechForge_Logo.png">
+
     <link rel="stylesheet" href="Stylesheet.css">
     <link rel="stylesheet" href="basket.css">
+    <link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
+    
     <script src="javascript.js" defer></script>
-    <link rel="shortcut icon" href="TechForge_Logo.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+	
+	<style>
         /* Additional basket styles */
         .empty-cart {
             text-align: center;
@@ -320,6 +365,23 @@ $grand_total = $total_price + $shipping;
         .login-prompt a:hover {
             text-decoration: underline;
         }
+
+	@media screen and (max-width: 768px) {
+    .basket-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    .basket-item img,
+    .product-image-placeholder {
+        width: 100% !important;
+        height: 200px !important;
+        margin-right: 0 !important;
+    }
+    .basket-container {
+        max-width: 100% !important;
+        padding: 10px !important;
+    }
+}
     </style>
 </head>
 
@@ -330,37 +392,24 @@ $grand_total = $total_price + $shipping;
         </div>
         <div class="sidebar-menu">
             <ul>
-                <li><a href="index.html"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                <li class="flyout-parent">
-                    <a href="#" class="flyout-toggle">
-                        <i class="fas fa-box-open"></i> <span>Products</span>
-                        <i class="fas fa-chevron-right flyout-arrow"></i>
-                    </a>
-                    <div class="flyout-menu">
-                        <a href="products.php">All Products</a>
-                        <a href="products.php?category=GPU">GPU</a>
-                        <a href="products.php?category=CPU">CPU</a>
-                        <a href="products.php?category=RAM">RAM</a>
-                        <a href="products.php?category=Motherboard">Motherboard</a>
-                        <a href="products.php?category=Storage">Storage</a>
-                    </div>
-                </li>
+                <li><a href="index.php"><i class="fas fa-home"></i> <span>Home</span></a></li>
+    			<li><a href="products.php"><i class="fas fa-box-open"></i> <span>Products</span>
                 <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
-                <li><a href="AboutUs.html"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
-                <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
-                <li><a href="signup.html"><i class="fas fa-sign-in-alt"></i> <span><?php echo isset($_SESSION['user_id']) ? 'Account' : 'Login'; ?></span></a></li>
+                <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                <li><a href="signup.php"><i class="fas fa-sign-in-alt"></i> <span><?php echo isset($_SESSION['user_id']) ? 'Account' : 'Login'; ?></span></a></li>
             </ul>
         </div>
     </div>
 
     <div class="main-content">
-        <div class="top-nav">
-            <div class="nav-left">
+        <div class="top-nav mobile-top-nav">
+            <div class="nav-left mobile-nav-left">
                 <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
-            <div class="nav-right">
+            <div class="nav-right mobile-nav-right">
                 <div class="nav-icons">
                     <a href="basket.php"><i class="fa-solid fa-basket-shopping active-icon"></i></a>
                     <button class="theme-toggle-btn">
@@ -372,7 +421,7 @@ $grand_total = $total_price + $shipping;
         </div>
 
         <div class="basket-container">
-            <h1>Your Basket</h1>
+            <h1 class="aldrich-regular">Your Basket</h1>
             
             <?php if(isset($error_message)): ?>
                 <div class="error-message">
@@ -446,7 +495,7 @@ $grand_total = $total_price + $shipping;
                     
                     <?php if(!isset($_SESSION['user_id'])): ?>
                         <div class="login-prompt">
-                            <p>Want to save your cart for later? <a href="login.php">Login</a> or <a href="signup.html">Sign Up</a></p>
+                            <p>Want to save your cart for later? <a href="signup.php">Login</a> or <a href="signup.php">Sign Up</a></p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -461,12 +510,12 @@ $grand_total = $total_price + $shipping;
             return;
         }
         
-        fetch('update_cart.php', {
+        fetch('basket.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: 'product_id=' + productId + '&quantity=' + quantity
+            body: 'product_id=' + productId + '&quantity=' + quantity + '&update_ajax_flag=1'
         })
         .then(response => response.json())
         .then(data => {
@@ -505,15 +554,11 @@ $grand_total = $total_price + $shipping;
             });
         }
     }
-    
-    function proceedToCheckout() {
-        <?php if(isset($_SESSION['user_id'])): ?>
-            window.location.href = 'checkout.php';
-        <?php else: ?>
-            alert('Please login to proceed to checkout');
-            window.location.href = 'login.php';
-        <?php endif; ?>
+
+function proceedToCheckout() {
+        window.location.href = 'checkout.php';
     }
+
     </script>
 </body>
 </html>

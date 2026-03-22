@@ -2,16 +2,15 @@
 session_start();
 require_once 'config.php';
 
-// Check if user is logged in (optional for dummy page)
-$is_logged_in = isset($_SESSION['user_id']);
+$is_logged_in = isset($_SESSION['user_id']); // check if user is logged in 
 
-// Get cart items for summary (optional)
+// get cart items for summary
 $cart_items = [];
 $total_price = 0;
 $shipping = 4.99;
 
 if(isset($_SESSION['user_id'])) {
-    // Get from database if logged in
+    // check db to see if user is logged in
     $user_id = $_SESSION['user_id'];
     $sql = "SELECT c.*, p.productname, p.price, p.imageurl 
             FROM cart c 
@@ -23,9 +22,10 @@ if(isset($_SESSION['user_id'])) {
     
     foreach($cart_data as $item) {
         $total_price += $item['price'] * $item['quantity'];
+        $cart_items[] = $item; // ADDED: Actually populate the array!
     }
 } elseif(isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-    // Get from session if guest
+    // get from session if guest
     $product_ids = array_keys($_SESSION['cart']);
     if(!empty($product_ids)) {
         $placeholders = str_repeat('?,', count($product_ids) - 1) . '?';
@@ -36,9 +36,23 @@ if(isset($_SESSION['user_id'])) {
         
         foreach($products as $product) {
             $product_id = $product['productid'];
-            $total_price += $product['price'] * $_SESSION['cart'][$product_id]['quantity'];
+            $qty = $_SESSION['cart'][$product_id]['quantity'];
+            $total_price += $product['price'] * $qty;
+            
+            // ADDED: Format the product like a cart item and add it to our array
+            $product['quantity'] = $qty;
+            $cart_items[] = $product;
         }
     }
+}
+
+// Only charge shipping if they actually have items, and apply free/reduced shipping if over 200
+if ($total_price == 0) {
+    $shipping = 0;
+} elseif ($total_price > 200) {
+    $shipping = $total_price * 0.025; // 2.5% of subtotal if over 200
+} else {
+    $shipping = 4.99; // standard if 200 or under
 }
 
 $grand_total = $total_price + $shipping;
@@ -51,10 +65,12 @@ $grand_total = $total_price + $shipping;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Tech Forge</title>
     <link rel="stylesheet" href="Stylesheet.css">
+    <script src="javascript.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="shortcut icon" href="TechForge_Logo.png">
+	<link rel="stylesheet" media="screen and (max-width: 768px)" href="phone.css">
     <style>
-        
+        /* Additional checkout styles */
         .checkout-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -232,6 +248,7 @@ $grand_total = $total_price + $shipping;
 
         .item-info {
             flex: 2;
+            padding-right: 15px;
         }
 
         .item-info h4 {
@@ -249,11 +266,13 @@ $grand_total = $total_price + $shipping;
             color: #b0b0b0;
             font-size: 0.9rem;
             margin: 0 15px;
+            white-space: nowrap;
         }
 
         .item-price {
             color: var(--secondary);
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .summary-line {
@@ -329,6 +348,7 @@ $grand_total = $total_price + $shipping;
             text-decoration: underline;
         }
 
+
         /* Responsive */
         @media (max-width: 768px) {
             .checkout-container {
@@ -351,38 +371,25 @@ $grand_total = $total_price + $shipping;
             <img src="techforgecog.png" alt="logo" class="sidebar-logo">
         </div>
         <div class="sidebar-menu">
-            <ul>
-                <li><a href="index.html"><i class="fas fa-home"></i> <span>Home</span></a></li>
-                <li class="flyout-parent">
-                    <a href="#" class="flyout-toggle">
-                        <i class="fas fa-box-open"></i> <span>Products</span>
-                        <i class="fas fa-chevron-right flyout-arrow"></i>
-                    </a>
-                    <div class="flyout-menu">
-                        <a href="products.php">All Products</a>
-                        <a href="products.php?category=GPU">GPU</a>
-                        <a href="products.php?category=CPU">CPU</a>
-                        <a href="products.php?category=RAM">RAM</a>
-                        <a href="products.php?category=Motherboard">Motherboard</a>
-                        <a href="products.php?category=Storage">Storage</a>
-                    </div>
-                </li>
+           <ul>
+                <li><a href="index.php"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                <li><a href="products.php"><i class="fas fa-box-open"></i> <span>Products</span></a></li>
                 <li><a href="ContactUs.php"><i class="fas fa-envelope"></i> <span>Contact</span></a></li>
-                <li><a href="AboutUs.html"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
-                <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
-                <li><a href="signup.html"><i class="fas fa-sign-in-alt"></i> <span><?php echo isset($_SESSION['user_id']) ? 'Account' : 'Login'; ?></span></a></li>
+                <li><a href="AboutUs.php"><i class="fas fa-info-circle"></i> <span>About</span></a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+                <li><a href="signup.php"><i class="fas fa-sign-in-alt"></i> <span><?php echo isset($_SESSION['user_id']) ? 'Account' : 'Login'; ?></span></a></li>
             </ul>
         </div>
     </div>
 
     <div class="main-content">
-        <div class="top-nav">
-            <div class="nav-left">
+        <div class="top-nav mobile-top-nav">
+            <div class="nav-left mobile-nav-left">
                 <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
-            <div class="nav-right">
+            <div class="nav-right mobile-nav-right">
                 <div class="nav-icons">
                     <a href="basket.php"><i class="fa-solid fa-basket-shopping"></i></a>
                     <button class="theme-toggle-btn">
@@ -395,19 +402,19 @@ $grand_total = $total_price + $shipping;
 
         <?php if(!$is_logged_in): ?>
         <div class="login-prompt-checkout">
-            <p>You're checking out as a guest. <a href="login.php">Login</a> to save your details for next time.</p>
+            <p>You're checking out as a guest. <a href="signup.php">Login</a> to save your details for next time.</p>
         </div>
         <?php endif; ?>
 
         <div class="checkout-container">
             <div class="checkout-header">
-                <h1>Checkout</h1>
+                <h1 class="aldrich-regular">Checkout</h1>
                 <p>Complete your purchase by filling in your details below</p>
             </div>
 
-            <!-- Checkout Form -->
-            <form action="order_confirmation.php" method="POST" class="checkout-form">
-                <!-- Contact Information -->
+            <form action="order_confirmation.php" method="POST" class="checkout-form" id="checkout-form">
+                
+                <?php if(!$is_logged_in): ?>
                 <div class="form-section">
                     <h2><i class="fas fa-user"></i> Contact Information</h2>
                     <div class="form-group">
@@ -419,8 +426,8 @@ $grand_total = $total_price + $shipping;
                         <label for="newsletter">Keep me updated on new products and offers</label>
                     </div>
                 </div>
+                <?php endif; ?>
 
-                <!-- Shipping Information -->
                 <div class="form-section">
                     <h2><i class="fas fa-truck"></i> Shipping Address</h2>
                     
@@ -476,7 +483,6 @@ $grand_total = $total_price + $shipping;
                     </div>
                 </div>
 
-                <!-- Payment Method -->
                 <div class="form-section">
                     <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
                     
@@ -497,40 +503,36 @@ $grand_total = $total_price + $shipping;
                     
                     <input type="hidden" id="payment_method" name="payment_method" value="card">
 
-                    <!-- Credit Card Details (shown by default) -->
                     <div id="card-details">
                         <div class="form-group">
                             <label for="card_number">Card Number *</label>
-                            <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456">
+                            <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" class="card-req" required>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="expiry">Expiry Date *</label>
-                                <input type="text" id="expiry" name="expiry" placeholder="MM/YY">
+                                <input type="text" id="expiry" name="expiry" placeholder="MM/YY" class="card-req" required>
                             </div>
                             <div class="form-group">
                                 <label for="cvv">CVV *</label>
-                                <input type="text" id="cvv" name="cvv" placeholder="123">
+                                <input type="text" id="cvv" name="cvv" placeholder="123" class="card-req" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="card_name">Name on Card *</label>
-                            <input type="text" id="card_name" name="card_name" placeholder="John Smith">
+                            <input type="text" id="card_name" name="card_name" placeholder="John Smith" class="card-req" required>
                         </div>
                     </div>
 
-                    <!-- PayPal Message (hidden initially) -->
                     <div id="paypal-message" style="display: none; background: #1d1a1e; padding: 20px; border-radius: 8px; text-align: center;">
                         <p>You'll be redirected to PayPal to complete your payment.</p>
                     </div>
 
-                    <!-- Apple Pay Message (hidden initially) -->
                     <div id="apple-message" style="display: none; background: #1d1a1e; padding: 20px; border-radius: 8px; text-align: center;">
                         <p>Pay with Apple Pay on your compatible device.</p>
                     </div>
                 </div>
 
-                <!-- Billing Address (same as shipping) -->
                 <div class="form-section">
                     <div class="checkbox-label">
                         <input type="checkbox" id="same_address" name="same_address" checked onclick="toggleBillingAddress()">
@@ -539,26 +541,61 @@ $grand_total = $total_price + $shipping;
 
                     <div id="billing-address" style="display: none; margin-top: 20px;">
                         <h3 style="color: var(--secondary); margin-bottom: 15px;">Billing Address</h3>
-                        <!-- Repeat address fields for billing -->
+                        
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="billing_first_name">First Name *</label>
-                                <input type="text" id="billing_first_name" name="billing_first_name">
+                                <input type="text" id="billing_first_name" name="billing_first_name" class="billing-req">
                             </div>
                             <div class="form-group">
                                 <label for="billing_last_name">Last Name *</label>
-                                <input type="text" id="billing_last_name" name="billing_last_name">
+                                <input type="text" id="billing_last_name" name="billing_last_name" class="billing-req">
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="billing_address">Address *</label>
-                            <input type="text" id="billing_address" name="billing_address">
+                            <input type="text" id="billing_address" name="billing_address" class="billing-req" placeholder="Street address">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="billing_address2">Apartment, suite, etc. (optional)</label>
+                            <input type="text" id="billing_address2" name="billing_address2">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="billing_city">City *</label>
+                                <input type="text" id="billing_city" name="billing_city" class="billing-req">
+                            </div>
+                            <div class="form-group">
+                                <label for="billing_postcode">Postcode *</label>
+                                <input type="text" id="billing_postcode" name="billing_postcode" class="billing-req">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="billing_country">Country *</label>
+                                <select id="billing_country" name="billing_country" class="billing-req">
+                                    <option value="">Select country</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="US">United States</option>
+                                    <option value="CA">Canada</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="FR">France</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="billing_phone">Phone *</label>
+                                <input type="tel" id="billing_phone" name="billing_phone" class="billing-req" placeholder="07700 123456">
+                            </div>
                         </div>
                     </div>
                 </div>
             </form>
 
-            <!-- Order Summary -->
             <div class="order-summary">
                 <h2>Order Summary</h2>
                 
@@ -566,37 +603,21 @@ $grand_total = $total_price + $shipping;
                     <?php if(empty($cart_items)): ?>
                         <p style="color: #b0b0b0; text-align: center;">No items in cart</p>
                     <?php else: ?>
-                        <!-- This is dummy data for display - in real implementation, you'd loop through cart items -->
+                        <?php foreach($cart_items as $item): ?>
                         <div class="summary-item">
                             <div class="item-info">
-                                <h4>MSI B650 GAMING PLUS</h4>
-                                <p>Motherboard, Socket AM5</p>
+                                <h4><?php echo htmlspecialchars($item['productname']); ?></h4>
                             </div>
-                            <span class="item-quantity">x1</span>
-                            <span class="item-price">£149.99</span>
+                            <span class="item-quantity">x<?php echo htmlspecialchars($item['quantity']); ?></span>
+                            <span class="item-price">£<?php echo number_format($item['price'], 2); ?></span>
                         </div>
-                        <div class="summary-item">
-                            <div class="item-info">
-                                <h4>AMD Ryzen 7 7800X3D</h4>
-                                <p>CPU, 8-Core, 4.2GHz</p>
-                            </div>
-                            <span class="item-quantity">x1</span>
-                            <span class="item-price">£369.99</span>
-                        </div>
-                        <div class="summary-item">
-                            <div class="item-info">
-                                <h4>Corsair Vengeance 32GB</h4>
-                                <p>DDR5 RAM, 6000MHz</p>
-                            </div>
-                            <span class="item-quantity">x2</span>
-                            <span class="item-price">£189.98</span>
-                        </div>
+                        <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
 
                 <div class="summary-line">
                     <span>Subtotal:</span>
-                    <span>£<?php echo number_format($total_price ?: 709.96, 2); ?></span>
+                    <span>£<?php echo number_format($total_price, 2); ?></span>
                 </div>
                 <div class="summary-line">
                     <span>Shipping:</span>
@@ -604,10 +625,10 @@ $grand_total = $total_price + $shipping;
                 </div>
                 <div class="summary-total">
                     <span>Total:</span>
-                    <span>£<?php echo number_format(($total_price ?: 709.96) + $shipping, 2); ?></span>
+                    <span>£<?php echo number_format($grand_total, 2); ?></span>
                 </div>
 
-                <button class="place-order-btn" onclick="placeOrder()">
+                <button type="submit" form="checkout-form" class="place-order-btn">
                     <i class="fas fa-lock" style="margin-right: 8px;"></i> Place Order
                 </button>
 
@@ -619,37 +640,43 @@ $grand_total = $total_price + $shipping;
     </div>
 
     <script>
+        // update the payment method logic to toggle the 'required' attribute on credit card fields
         function selectPaymentMethod(element, method) {
-            // Remove selected class from all payment methods
             document.querySelectorAll('.payment-method').forEach(m => {
                 m.classList.remove('selected');
             });
             
-            // Add selected class to clicked method
             element.classList.add('selected');
-            
-            // Update hidden input
             document.getElementById('payment_method').value = method;
             
-            // Show/hide relevant payment details
             document.getElementById('card-details').style.display = method === 'card' ? 'block' : 'none';
             document.getElementById('paypal-message').style.display = method === 'paypal' ? 'block' : 'none';
             document.getElementById('apple-message').style.display = method === 'apple' ? 'block' : 'none';
+
+            // required state on card inputs
+            const cardInputs = document.querySelectorAll('.card-req');
+            if (method === 'card') {
+                cardInputs.forEach(input => input.required = true);
+            } else {
+                cardInputs.forEach(input => input.required = false);
+            }
         }
         
+        // update the billing address logic to toggle the 'required' attribute on billing fields
         function toggleBillingAddress() {
             const checkbox = document.getElementById('same_address');
             const billingAddress = document.getElementById('billing-address');
-            billingAddress.style.display = checkbox.checked ? 'none' : 'block';
+            const billingReqInputs = document.querySelectorAll('.billing-req');
+
+            if (checkbox.checked) {
+                billingAddress.style.display = 'none';
+                billingReqInputs.forEach(input => input.required = false);
+            } else {
+                billingAddress.style.display = 'block';
+                billingReqInputs.forEach(input => input.required = true);
+            }
         }
         
-        function placeOrder() {
-            // Simple dummy function - shows a success message
-            alert('Thank you for your order! This is a dummy checkout page.');
-            
-            // You could redirect to a success page
-            // window.location.href = 'order_confirmation.php';
-        }
     </script>
 </body>
 </html>

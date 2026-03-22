@@ -8,6 +8,7 @@ public class math {
     System.out.println("Max: " + max(a, b));
     System.out.println("Divide: " + Divide(a, b));
     System.out.println("Multiply: " + multiply(a, b));
+    System.out.println("Average: " + Average(a,b)); 
     }
     
     public math() { }
@@ -83,13 +84,35 @@ public class math {
     
     /// separator ///
     
-        //name : function
+        //Pooja Sandhu : Power
+        /********************************
+         * Developer: Pooja Sandhu
+         * University ID: 230154829
+         * Function: This takes 2 integers, the first as base and the second as an exponent,
+         * and returns the result of raising the base to the power of the exponent.
+         ********************************/
+        public static int Power(int base, int exponent) {
+            int result = 1;
+            for (int i = 1; i <= exponent; i++) {
+                result = result * base;
+            }
+            return result;
+        }
     
     /// separator ///
     
     /// separator ///
     
-        //name : function
+        //Awais Rehman : Average
+        /********************************
+        Developer: Awais Rehman
+        University ID: 240092768
+        Function: This takes two integers and returns their average.
+        ********************************/
+
+        public static double Average(int a, int b) {
+            return (a + b) / 2.0;
+        }
     
     /// separator ///
     
